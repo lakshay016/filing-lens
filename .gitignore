@@ -2,3 +2,21 @@
 node_modules/
 .env
 __pycache__/
+
+# Python
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local data, caches and models (never committed)
+data/
+holdings.local.toml
+.env.*
+!.env.example
+
+# Licensed-data guard: no data files in the repo
+*.parquet
+*.sas7bdat
+*.dta
