@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: filinglens
+          POSTGRES_PASSWORD: filinglens
+          POSTGRES_DB: filinglens
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U filinglens -d filinglens"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      FL_DATABASE_URL: postgresql://filinglens:filinglens@localhost:5433/filinglens
+      FL_REQUIRE_DB: "1"
+      FL_LLM_MODE: replay
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --locked --all-groups
+      - run: uv run python scripts/check_licensed_data.py
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run alembic upgrade head
+      - run: uv run pytest
