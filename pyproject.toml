@@ -6,6 +6,10 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "typer",
     "pydantic-settings",
+    "sqlalchemy>=2.1.8",
+    "psycopg[binary]>=3.3.9",
+    "alembic>=1.20.1",
+    "pgvector>=0.5.1",
 ]
 
 [project.scripts]
