@@ -41,6 +41,15 @@ judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in to
 
 ## Log
 
+### 2026-11-15 (later)
+- Branch `docs/briefs` (not merged): SPEC §16 has the verified facts and design decisions
+  dated 2026-11-15; `docs/briefs/` has README (conventions, lead protocol) and briefs
+  0.1, 0.2, 0.3, 0.4, 1.7, 1.8. **Briefs still to write:** 1.1–1.6, 1.9–1.16; the
+  decisions they need are already in SPEC §16. No task has been dispatched; next is
+  finish the briefs, merge this branch, then task 0.1.
+- Found: a native Postgres listens on 5432, so Docker Postgres uses port 5433. The
+  author must change the port in `FL_DATABASE_URL` in `.env` to 5433.
+
 ### 2026-11-15
 - uv and Docker blockers cleared and verified. Docs committed to `main`.
 
