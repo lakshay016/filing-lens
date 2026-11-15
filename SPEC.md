@@ -108,7 +108,8 @@ Any change to the plan must still satisfy all of these.
 ### 2.4 Other data
 
 - FinanceBench open set (150 questions) is for non-commercial use. It is downloaded by
-  script and not committed to the repo. `[VERIFY]` licence text on the dataset card.
+  script and not committed to the repo. Licence on the dataset card: CC BY-NC 4.0
+  (verified 2026-11-15, §16).
 - Free-tier LLM providers may use prompts to improve their products. Only public filing
   text goes to them. Anything that reveals the author's holdings goes only through a
   provider tagged `private_ok` in config, or a local model (§10.2).
@@ -257,7 +258,8 @@ point-in-time work in §11.2), `primary_document`, `sic`.
 - One shared async token bucket at 8 requests/second across all workers.
 - Retries: exponential backoff with jitter, max 5 attempts, on 429/403/5xx/timeouts.
 - Resumable and idempotent: a `filing` manifest row has `fetch_status`
-  (`pending|ok|failed`) and `raw_sha256`. Re-running skips `ok` rows.
+  (`pending|ok|failed|skipped`; `skipped` = amendment or transition report, recorded but
+  not downloaded) and `raw_sha256`. Re-running skips `ok` rows.
 - Download the **primary document only**, not the full submission with exhibits.
 - Storage:
   - `t0`/`t1`: keep raw HTML at `data/raw/{cik}/{accession}/` (zstd) so the parser can be
@@ -307,8 +309,8 @@ Era rules (do not treat a missing section as a parse failure):
 |---|---|
 | 1A Risk Factors | Fiscal years ending on or after 2005-12-01 |
 | 1B Unresolved Staff Comments | Same era as 1A |
-| 1C Cybersecurity | Fiscal years ending on or after 2023-12-15 `[VERIFY]` exact date |
-| 9C | 2022 onwards `[VERIFY]` |
+| 1C Cybersecurity | Fiscal years ending on or after 2023-12-15 (verified, §16) |
+| 9C | Filings made on or after 2021-05-05 (verified, §16). Optional in every era; never required for `parse_status` |
 
 Each filing gets `parse_status`:
 
@@ -425,7 +427,9 @@ Computed for every eligible pair, for whole documents and per Item:
   removing changes classified cosmetic (§7).
 
 The paper uses four similarity measures (cosine, Jaccard, minimum edit distance and a
-"simple" side-by-side measure) `[VERIFY against the paper]`. Cosine and Jaccard are the
+"simple" side-by-side measure). This was confirmed from a secondary source only on
+2026-11-15; `[VERIFY against the paper]` remains open for task 3.1. Slice 1 depends only
+on cosine and Jaccard being among them. Cosine and Jaccard are the
 replication measures; `change_intensity` is the contribution. Minimum-edit and simple
 are `[EXPANSION]`.
 
@@ -626,7 +630,7 @@ Retrieval is time-aware:
 | Stage | Detail |
 |---|---|
 | Sparse | Own BM25 (`k1 = 1.2`, `b = 0.75`) over version text; inverted index in SciPy sparse, persisted, loaded in memory. Top 50. |
-| Dense | Local open embedding model, 384 dimensions (default `BAAI/bge-small-en-v1.5` `[VERIFY]` still a sensible small default at build time); pgvector HNSW, cosine. Top 50. |
+| Dense | Local open embedding model, 384 dimensions (`BAAI/bge-small-en-v1.5`, run through ONNX with `fastembed`; confirmed 2026-11-15, §16); pgvector HNSW, cosine. Top 50. |
 | Filter | Applied to both: `cik`, fiscal-year validity, optionally `item`. |
 | Fusion | Reciprocal rank fusion, `score = Σ 1 / (60 + rank)`. Top 20. |
 | Rerank | Small cross-encoder, ONNX int8, CPU. Top 8 to the generator. |
@@ -800,7 +804,8 @@ class LLMClient(Protocol):
 not used for training, and for local models) and rate limits.
 
 - Do **not** hard-code model ids in source. Free-tier model names and limits change;
-  check the providers' current documentation when filling in this file. `[VERIFY]`
+  check the providers' current documentation when filling in this file. The entries
+  needed for slice-1 summaries were verified on 2026-11-15 (§16); re-check at task 2.2.
 - Defaults: Gemini free tier for public generation; Groq for private requests and as
   the judge (must differ from the generator); Ollama optional for offline development.
 - Most providers accept the OpenAI-compatible request format, so a provider is a base
@@ -999,7 +1004,7 @@ paragraph(id, filing_id FK, item, seq, heading_path TEXT[], text, is_table,
 
 alignment_pair(id, cik, old_filing_id FK, new_filing_id FK, item NULLABLE,
                eligible, exclusion_reason, idf_version, aligner_version,
-               sim_cosine, sim_jaccard, change_intensity)
+               sim_cosine, sim_jaccard, change_intensity_raw, change_intensity)
 
 alignment_edge(id, pair_id FK, label, old_paragraph_ids INT[], new_paragraph_ids INT[],
                sim, n_ins, n_del, changed_ratio, cross_item BOOL)
@@ -1164,6 +1169,37 @@ Designed for, not built now. Each names the seam where it attaches.
 | 2026-11-14 | Neon is used for Postgres only (project "filing lens", AWS US East 2, free plan). No object storage, functions, auth or AI gateway | Not needed; keeps the hosted footprint minimal |
 | 2026-11-14 | Development uses a sample watchlist (`holdings.sample.toml`) | The author has no real holdings yet |
 | 2026-11-14 | The EDGAR contact email is a request header only; the project sends no email | Clarifies there is no mail integration in any slice |
+| 2026-11-15 | **Verified:** Item 1C applies to fiscal years ending on or after 2023-12-15 | SEC press release 2023-139 (release 33-11216) |
+| 2026-11-15 | **Verified:** Item 9C was added by the HFCAA interim final rule effective 2021-05-05 (made final in release 34-93701). It is optional in every era and never counts toward `parse_status` | Most filers answer "Not applicable"; nothing depends on it |
+| 2026-11-15 | **Verified:** SEC maximum access rate is 10 requests/second; the User-Agent format is `Name contact@email` | SEC webmaster FAQ. The 8/s cap stands |
+| 2026-11-15 | **Verified:** `acceptanceDateTime` in the EDGAR submissions API is true UTC. Stored as `timestamptz`; §11.2 converts to America/New_York | AAPL 0000320193-26-000026: API `13:05:15Z`, filing index page `08:05:15` Eastern |
+| 2026-11-15 | **Verified:** submissions JSON has `filings.recent` (columnar arrays incl. `accessionNumber, filingDate, reportDate, acceptanceDateTime, form, primaryDocument`) and `filings.files[]` (`name, filingCount, filingFrom, filingTo`) for older filings; `company_tickers.json` is `{"0": {"cik_str": int, "ticker": str, "title": str}, ...}` | Fetched 2026-11-15 |
+| 2026-11-15 | **Verified:** FinanceBench open set is 150 rows, licence CC BY-NC 4.0; `doc_type` values seen: 10k, 10q, 8k (a fourth exists) | Hugging Face dataset card `PatronusAI/financebench` |
+| 2026-11-15 | Lazy Prices four measures confirmed from a secondary source only; the primary check stays open for task 3.1 | The paper was not retrievable; slice 1 needs only cosine and Jaccard |
+| 2026-11-15 | Embedding model stays `BAAI/bge-small-en-v1.5` (384-d), run with `fastembed` (ONNX Runtime), not PyTorch | Schema is fixed at 384; avoids a 2 GB torch install; local and free |
+| 2026-11-15 | Slice-1 summary models: public = Gemini `gemini-3.5-flash-lite` at `https://generativelanguage.googleapis.com/v1beta/openai/` (`private_ok = false`: free-tier content is used to improve Google products); private = Groq `llama-3.3-70b-versatile` at `https://api.groq.com/openai/v1` (`private_ok = true`: Services Agreement §4.2, last modified 2026-06-22, bars training on inputs/outputs; inference requests are not retained by default). Free-tier rate limits were not verifiable from primary pages; the client uses a conservative 10 requests/minute per provider | Provider pages fetched 2026-11-15. Re-check ids and limits at tasks 1.14 and 2.2 |
+| 2026-11-15 | Local Docker Postgres listens on host port **5433**, bound to 127.0.0.1. `FL_DATABASE_URL` default is `postgresql://filinglens:filinglens@localhost:5433/filinglens` | A native Postgres already occupies 5432 on the author's machine |
+| 2026-11-15 | Slice-1 pipeline code uses synchronous SQLAlchemy 2 with `psycopg` 3. Async sessions are introduced with the API in slice 2 (same driver) | The pipeline is a batch CLI; sync is simpler and equally fast here |
+| 2026-11-15 | Tests that need a database use a separate database `filinglens_test` on the `FL_DATABASE_URL` server, refuse any non-localhost host, and never read `DATABASE_URL` | Enforces "no test ever connects to Neon" |
+| 2026-11-15 | `fiscal_year` = calendar year of `period_of_report`, minus one when that date is 1–7 January | Matches how companies label fiscal years; the January rule keeps 52/53-week filers from getting two filings in one year. Era rules use `period_of_report` dates directly |
+| 2026-11-15 | `fetch_status` gains `skipped`. `10-K/A`, `10-K405/A`, `10-KT`, `10-KT/A` get manifest rows with `skipped` and are not downloaded. If a company has two original 10-Ks for one fiscal year, the earliest accepted is used and the other is excluded as `duplicate_period` | "Recorded in the manifest, excluded from pairs" made concrete |
+| 2026-11-15 | Bulk discovery through `full-index/form.idx` is deferred to task 3.2. Slice 1 discovers filings through the submissions API only | Only `t2_*` universes need it |
+| 2026-11-15 | Plain-text (non-HTML) primary documents get `parse_status = failed`, reason `not_html` | Slice-1 universes start at fiscal 2014; the text-era parser is the §15 expansion |
+| 2026-11-15 | Block `html_offset` is realised as `source_line` (lxml's line number of the block's first element) | lxml exposes no byte offsets; the field is for debugging only |
+| 2026-11-15 | **Item segmentation objective clarified (§5.4).** Each candidate heading's gain is the text between it and the *next candidate of any Item*; the DP picks the canonical-order subsequence maximising total gain. A section then runs from its chosen heading to the next *chosen* heading | Read literally, "total text between consecutive chosen headings" telescopes to the distance from the first chosen heading to the end of the document and cannot tell a table-of-contents entry from a body heading |
+| 2026-11-15 | Item pattern extended to combined headings (`Items 1 and 2. Business and Properties`). All listed Items count as found; the text is stored under the first; the rest are recorded in `parse_notes.combined` | Common in energy filers (for example Exxon Mobil) |
+| 2026-11-15 | Text before the first Item is stored as paragraphs with `item = 'front'`. It is never aligned but is part of whole-document measures | Whole-document similarity (§6.4) needs the full text |
+| 2026-11-15 | Item-level status: an Item is `ok` when it was found and, for Items 1, 1A, 7 and 8, has at least 2,000 characters; otherwise `short` or `missing`. An Item is aligned only when `ok` in both filings. An Item present on one side only gets a non-eligible pair row and no `added`/`deleted` edges; its paragraphs still enter the cross-Item move pool | Makes "not `ok` for the Item in question" (§5.4) concrete |
+| 2026-11-15 | Normalisation order (§5.5): NFKC and lowercase, then date/year/number masking, then punctuation stripping. A number is masked only when it is not glued to a letter (`10-K`, `1A`, `COVID-19` are kept); currency sign, `%`, brackets and a following scale word (`million`, `billion`…) are part of the number | Masking after stripping cannot recognise `$1.2 billion` or `December 31, 2023` |
+| 2026-11-15 | TF-IDF (§6.2) is our own implementation: tokens of `norm_masked`, unigrams + bigrams, `tf = 1 + ln(count)`, `idf = ln((1 + N) / (1 + df)) + 1`, L2-normalised. Terms are stored as 64-bit BLAKE2b hashes with `min_df = 2`; a term not in the file gets the maximum IDF (`df = 0`) instead of being dropped. Similarities are rounded to 6 decimals before any comparison | New paragraphs are made of unseen terms, so dropping them would inflate similarity; hashing keeps the file small; rounding keeps output byte-identical |
+| 2026-11-15 | Aligner details (§6.3). (a) A 1-to-1 edge's label comes from the hashes: equal `exact_hash` → `unchanged`, equal `masked_hash` → `rollforward`, else `modified`, whichever stage matched it. (b) A DP match needs `sim ≥ τ`; traceback prefers "delete old", then "add new", then "match", so equal-score alignments resolve to the lowest indices. (c) Stage-1 move candidates are removed from the gaps before Stage 2 and emitted as `moved`. (d) Cross-Item `moved` edges belong to the whole-document pair row (`item` NULL). (e) Only `modified` edges can absorb a neighbour into a `split`/`merged`, one neighbour each | Each was undefined or ambiguous in §6.3 |
+| 2026-11-15 | Word diff (§6.3 output): `difflib.SequenceMatcher(autojunk=False)` over `norm_exact` tokens; `changed_ratio = (n_ins + n_del) / (len_old + len_new)` | "A standard sequence diff over tokens" made concrete |
+| 2026-11-15 | `alignment_pair` gains `change_intensity_raw` (computed at alignment time, cosmetic changes not removed). `change_intensity` stays NULL until the classifier has run (task 1.14) | §6.4 needs the classifier, which does not exist when task 1.8 runs |
+| 2026-11-15 | Document measures use `norm_exact` unigram tokens: `sim_cosine` on raw counts, `sim_jaccard` on term sets | §6.4 did not name the tokenisation |
+| 2026-11-15 | Gold alignment files and change labels identify paragraphs by `(accession, item, seq, exact_hash)`, never by database id. The evaluator fails if a hash no longer matches. Files under `eval/` are the source of truth; `change_label` rows are a cache | Database ids change when a filing is re-parsed |
+| 2026-11-15 | Test fixtures are four complete public 10-Ks (Apple and Exxon Mobil, fiscal 2022 and 2023), zstd-compressed under `tests/fixtures/filings/` | Small when compressed; gives real consecutive pairs for parser and aligner tests |
+| 2026-11-15 | The minimal LLM client (§10: one OpenAI-compatible client, privacy failover, disk cache, replay mode) is built at task 1.14; task 2.2 extends it | Slice-1 summaries need it |
+| 2026-11-15 | Briefs for every slice-0 and slice-1 task live in `docs/briefs/`. Where a brief is more specific than this spec, the brief applies and the decision is listed here | Lead hand-over on 2026-11-16 |
 
 ### 16.1 WRDS research notes (2026-11-14, from public pages; re-check when access is granted)
 
