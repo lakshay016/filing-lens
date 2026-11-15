@@ -4,7 +4,7 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Phase:** design complete, no code written. Next task: **slice 0, task 0.1**.
+- **Phase:** slice 0 in progress. Done: 0.1. Next: 0.2 and 0.3 (parallel), then 0.4.
 - **Blockers:** none. `uv` 0.13.8 with Python 3.12.16 and Docker 29.9.3 (daemon running)
   were verified on 2026-11-15.
 - **Lead:** Fable 5.2 until 2026-11-16, then Opus 5.5, working from `docs/briefs/`.
@@ -40,6 +40,10 @@ hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1
 judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
 
 ## Log
+
+### 2026-11-15 — task 0.1 done
+- Project skeleton merged: `uv run fl --help` works, 13 tests pass, ruff and mypy clean.
+  `fl env` shows which settings are filled in without printing any value.
 
 ### 2026-11-15 (later)
 - Branch `docs/briefs` (not merged): SPEC §16 has the verified facts and design decisions

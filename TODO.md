@@ -16,7 +16,7 @@ Task numbers match SPEC.md §14. `[you]` = only the author can do it.
 - [ ] [you] Optional: ask the UofT library whether CRSP via CHASS avoids the WRDS blackout
 
 ## Slice 0 - skeleton (~2 days)
-- [ ] 0.1 `pyproject.toml`, uv, Python 3.12, `src/` layout, ruff, pytest, `fl` CLI stub
+- [x] 0.1 `pyproject.toml`, uv, Python 3.12, `src/` layout, ruff, pytest, `fl` CLI stub
 - [ ] 0.2 `docker-compose.yml` (Postgres + pgvector); Alembic initial migration
 - [ ] 0.3 `.env.example`, `.gitignore` for `data/`, licensed-data guard hook
 - [ ] 0.4 GitHub Actions: lint + tests
