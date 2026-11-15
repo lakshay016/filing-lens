@@ -6,6 +6,10 @@ This is the single source of truth for building Filing Lens. It is written so th
 implementer (a person or a coding model) who was not part of the design discussion can
 build the project from it without re-deciding anything.
 
+**Related documents:** [docs/PRODUCT.md](docs/PRODUCT.md) (what the product is, its
+restrictions and limitations), [docs/STATUS.md](docs/STATUS.md) (current progress),
+[CLAUDE.md](CLAUDE.md) (rules for agents), [TODO.md](TODO.md) (task checklist).
+
 **How to read it**
 
 - Statements are decisions unless tagged otherwise. Do not re-litigate them; if one turns
@@ -200,7 +204,9 @@ filing_lens/
 | Variable | Purpose |
 |---|---|
 | `FL_SEC_USER_AGENT` | `"Name contact@email"` for EDGAR |
-| `FL_DATABASE_URL` | Postgres connection string |
+| `FL_DATABASE_URL` | Local Docker Postgres. Development and tests use only this. |
+| `DATABASE_URL` | Hosted Neon Postgres, pooled. Deployed app only (slice 2). |
+| `DATABASE_URL_UNPOOLED` | Hosted Neon Postgres, direct. Alembic migrations against Neon (slice 2). |
 | `FL_DATA_DIR` | Defaults to `./data` |
 | `FL_LICENSED_DIR` | Defaults to `~/filinglens-licensed`; unused until CRSP |
 | `GEMINI_API_KEY`, `GROQ_API_KEY` | LLM providers |
@@ -1152,6 +1158,36 @@ Designed for, not built now. Each names the seam where it attaches.
 | 2026-11-13 | Free-data backtest results are never reported | Survivorship bias points at the effect being tested |
 | 2026-11-13 | Build without CRSP; integrate later behind `PriceSource` | Access unconfirmed; licensed data may not be shown to a model anyway |
 | 2026-11-13 | v1 backtest is 10-K only | Scope; documented deviation from the paper |
+| 2026-11-13 | Of four suggested "advanced RAG" techniques: keep hybrid search + RRF; keep routing/decomposition but as a constrained router, not a free-form planner; keep verification but with deterministic numeric checks and entailment instead of model self-scoring; reject LLM-extracted GraphRAG | The alignment-derived version chains are the graph, built deterministically at no cost; LLM extraction breaks the $0 budget and is hard to defend |
+| 2026-11-13 | Every retrieval component must earn a row in the ablation ladder or be cut | Stops technique-stacking from clouding what actually helps |
+| 2026-11-14 | `FL_DATABASE_URL` is local Postgres; `DATABASE_URL` / `DATABASE_URL_UNPOOLED` are Neon | Tests can never touch the hosted database by accident; matches Neon's own naming |
+| 2026-11-14 | Neon is used for Postgres only (project "filing lens", AWS US East 2, free plan). No object storage, functions, auth or AI gateway | Not needed; keeps the hosted footprint minimal |
+| 2026-11-14 | Development uses a sample watchlist (`holdings.sample.toml`) | The author has no real holdings yet |
+| 2026-11-14 | The EDGAR contact email is a request header only; the project sends no email | Clarifies there is no mail integration in any slice |
+
+### 16.1 WRDS research notes (2026-11-14, from public pages; re-check when access is granted)
+
+- **WRDS acknowledgement** (Terms of Use, last updated 2026-08-25): "Wharton Research
+  Data Services (WRDS) was used in preparing [identify research piece]. This service and
+  the data available thereon constitute valuable intellectual property and trade secrets
+  of WRDS and/or its third-party suppliers."
+- **CRSP credit line** (as given in university library guides; confirm against CRSP's own
+  terms): "Calculated (or Derived) based on data from [DATABASE NAME] ©[YYYY] Center for
+  Research in Security Prices (CRSP®), The University of Chicago Booth School of Business."
+- **Publishing**: the WRDS Terms do not address derived or aggregate results directly.
+  The WRDS co-authorship guide says code may be shared, and that aggregated results from
+  "material transformation" that cannot be reverse-engineered are acceptable to share;
+  raw data may not be. A long-short portfolio return series is consistent with that
+  guidance but is not explicitly named, so still confirm with WRDS Support or the library
+  before publishing one. Charts and summary statistics are the safe default.
+- **AI policy**: loading WRDS data into LLM tools is prohibited for most datasets. CRSP is
+  listed among vendors that allow *protected* versions of such tools, with the vendor to
+  be contacted for clarification. §2.3 rule 4 (no licensed rows in any AI session) stays
+  as the rule.
+- **Alternative route**: the U of T Map & Data Library lists CRSP as available to staff,
+  faculty and students through WRDS **or CHASS (UTORid login)**. CHASS may not share the
+  WRDS between-term blackout; ask the library. `CrspPriceSource` should read from local
+  Parquet files so it does not care which platform the data came from.
 
 ## 17. Open items
 
