@@ -4,7 +4,10 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Phase:** slice 0 in progress. Done: 0.1, 0.2, 0.3. Next: 0.4 (CI).
+- **Phase:** **slice 0 complete** (0.1–0.4 merged, CI green). Next task: **slice 1, task 1.1**
+  (EDGAR client). Briefs for every slice-1 task are in `docs/briefs/`.
+- **Author actions outstanding:** change the port in `FL_DATABASE_URL` in `.env` to 5433;
+  run `sh scripts/install_hooks.sh` once to install the pre-commit guard.
 - **Blockers:** none. `uv` 0.13.8 with Python 3.12.16 and Docker 29.9.3 (daemon running)
   were verified on 2026-11-15.
 - **Lead:** Fable 5.2 until 2026-11-16, then Opus 5.5, working from `docs/briefs/`.
@@ -40,6 +43,10 @@ hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1
 judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
 
 ## Log
+
+### 2026-11-15 — task 0.4 done, slice 0 complete
+- CI merged: guard, ruff, mypy, migration and pytest (32 passed, database tests not
+  skipped) run on every pull request in about 30 seconds.
 
 ### 2026-11-15 — task 0.2 done
 - Local Postgres (pgvector, port 5433), models and migration `0001` merged. Upgrade,

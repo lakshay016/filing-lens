@@ -19,7 +19,7 @@ Task numbers match SPEC.md §14. `[you]` = only the author can do it.
 - [x] 0.1 `pyproject.toml`, uv, Python 3.12, `src/` layout, ruff, pytest, `fl` CLI stub
 - [x] 0.2 `docker-compose.yml` (Postgres + pgvector); Alembic initial migration
 - [x] 0.3 `.env.example`, `.gitignore` for `data/`, licensed-data guard hook
-- [ ] 0.4 GitHub Actions: lint + tests
+- [x] 0.4 GitHub Actions: lint + tests
 
 ## Slice 1 - alignment engine and change alerts (~3-4 weeks)
 - [ ] 1.1 EDGAR client: token bucket, retries, User-Agent check
