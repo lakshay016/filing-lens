@@ -10,8 +10,8 @@ Task numbers match SPEC.md §14. `[you]` = only the author can do it.
 - [x] [you] Neon project created; `DATABASE_URL` in `.env` (unused until slice 2)
 - [x] Disk space: ~619 GB free
 - [x] WRDS terms, citation and AI policy researched (SPEC §16.1)
-- [ ] [you] Install uv: `brew install uv`, then `uv python install 3.12`
-- [ ] [you] Start Docker Desktop (installed, daemon not running)
+- [x] [you] Install uv: `brew install uv`, then `uv python install 3.12` (verified 2026-11-15)
+- [x] [you] Start Docker Desktop (verified running 2026-11-15)
 - [ ] [you] Decide whether to remove Neon tooling files (`neon.ts`, `package.json`, `node_modules/`)
 - [ ] [you] Optional: ask the UofT library whether CRSP via CHASS avoids the WRDS blackout
 

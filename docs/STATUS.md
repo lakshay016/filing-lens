@@ -5,22 +5,21 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 ## Now
 
 - **Phase:** design complete, no code written. Next task: **slice 0, task 0.1**.
-- **Blocked on the author before any code runs:**
-  1. Install `uv`: `brew install uv`, then `uv python install 3.12`. (Not installed as of
-     2026-11-14.)
-  2. Start Docker Desktop. (Installed, but the daemon was not running on 2026-11-14.)
+- **Blockers:** none. `uv` 0.13.8 with Python 3.12.16 and Docker 29.9.3 (daemon running)
+  were verified on 2026-11-15.
+- **Lead:** Fable 5.2 until 2026-11-16, then Opus 5.5, working from `docs/briefs/`.
 
 ## Setup checklist
 
-| Item | State (2026-11-14) |
+| Item | State (2026-11-15) |
 |---|---|
 | GitHub repo `lakshay016/filing-lens`, remote `origin` | Done |
 | `.env` with `FL_SEC_USER_AGENT`, `GROQ_API_KEY`, `GEMINI_API_KEY` | Author reports done; seen in a screenshot, not verified by a script |
 | `FL_DATABASE_URL` = local Docker Postgres | Author reports done |
 | Neon project ("filing lens", AWS US East 2, free plan); `DATABASE_URL`, `DATABASE_URL_UNPOOLED` in `.env` | Done; not used until slice 2 |
 | Homebrew | Installed |
-| Python 3.12 via `uv` | **Not done** |
-| Docker running | **Not done** |
+| Python 3.12 via `uv` | Done (uv 0.13.8, CPython 3.12.16) |
+| Docker running | Done (29.9.3) |
 | Disk space | ~619 GB free |
 | Sample watchlist `holdings.sample.toml` | Done (author has no real holdings) |
 | Ollama | Skipped; optional |
@@ -41,6 +40,9 @@ hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1
 judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
 
 ## Log
+
+### 2026-11-15
+- uv and Docker blockers cleared and verified. Docs committed to `main`.
 
 ### 2026-11-14
 - Researched WRDS terms, citation wording and AI policy from public pages; recorded in
