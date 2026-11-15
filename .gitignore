@@ -20,4 +20,11 @@ holdings.local.toml
 *.parquet
 *.sas7bdat
 *.dta
+*.csv
 .neon
+
+# Test and build outputs
+.coverage
+htmlcov/
+dist/
+tests/snapshots/*.new
