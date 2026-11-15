@@ -1,0 +1,14 @@
+# Sample watchlist for development and demos. These are NOT real holdings.
+# Copy to holdings.local.toml (gitignored) and edit to use your own.
+# Tickers only; no quantities are ever stored.
+
+tickers = [
+  "AAPL",  # hardware / consumer
+  "NVDA",  # semiconductors
+  "JPM",   # bank (large risk-factor section)
+  "COST",  # retail
+  "PFE",   # pharma
+  "XOM",   # energy
+  "BA",    # industrials (heavy year-to-year changes)
+  "NFLX",  # media
+]
