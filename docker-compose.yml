@@ -1,3 +1,5 @@
+name: filinglens
+
 services:
   db:
     image: pgvector/pgvector:pg16
