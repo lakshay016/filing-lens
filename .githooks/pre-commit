@@ -1,0 +1,8 @@
+#!/bin/sh
+# Licensed-data guard (SPEC 2.3, 11.6). Install with scripts/install_hooks.sh.
+if command -v uv >/dev/null 2>&1; then
+    uv run python scripts/check_licensed_data.py --staged
+else
+    python3 scripts/check_licensed_data.py --staged
+fi
+exit $?
