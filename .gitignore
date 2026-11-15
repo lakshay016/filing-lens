@@ -20,3 +20,4 @@ holdings.local.toml
 *.parquet
 *.sas7bdat
 *.dta
+.neon
