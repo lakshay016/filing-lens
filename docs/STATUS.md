@@ -44,6 +44,10 @@ judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in to
 
 ## Log
 
+### 2026-11-15 — briefs complete
+- `docs/briefs/` now has one brief for every task of slices 0 and 1 (0.1–0.4, 1.1–1.16)
+  plus `README.md` (agent rules, module ownership, lead protocol).
+
 ### 2026-11-15 — task 0.4 done, slice 0 complete
 - CI merged: guard, ruff, mypy, migration and pytest (32 passed, database tests not
   skipped) run on every pull request in about 30 seconds.
