@@ -1,0 +1,9 @@
+# Sample universe for exercising the pipeline before the author picks t0_dev.
+# Mirrors holdings.sample.toml. These are NOT real holdings.
+name = "sample"
+forms = ["10-K", "10-K405"]
+fiscal_year_min = 2018
+# fiscal_year_max = 2025        optional; absent = no upper bound
+store_raw = true                # false = text-only mode (task 3.2); ingest rejects it for now
+tickers = ["AAPL", "NVDA", "JPM", "COST", "PFE", "XOM", "BA", "NFLX"]
+ciks = []                       # optional explicit CIKs, merged with the tickers
