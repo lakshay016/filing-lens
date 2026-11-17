@@ -1,0 +1,387 @@
+{
+  "1": {
+    "first_three": [
+      [
+        [
+          "Company Background"
+        ],
+        "The Company designs, manufactures and markets smartphones, personal computers, t"
+      ],
+      [
+        [
+          "Products"
+        ],
+        "iPhone iPhone® is the Company's line of smartphones based on its iOS operating s"
+      ],
+      [
+        [
+          "Products"
+        ],
+        "Mac Mac® is the Company's line of personal computers based on its macOS® operati"
+      ]
+    ],
+    "median_tokens": 61,
+    "paragraphs": 33,
+    "tables": 0
+  },
+  "10": {
+    "first_three": [
+      [
+        [],
+        "The information required by this Item will be included in the Company's definiti"
+      ]
+    ],
+    "median_tokens": 55,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "11": {
+    "first_three": [
+      [
+        [],
+        "The information required by this Item will be included in the 2024 Proxy Stateme"
+      ]
+    ],
+    "median_tokens": 20,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "12": {
+    "first_three": [
+      [
+        [],
+        "The information required by this Item will be included in the 2024 Proxy Stateme"
+      ]
+    ],
+    "median_tokens": 20,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "13": {
+    "first_three": [
+      [
+        [],
+        "The information required by this Item will be included in the 2024 Proxy Stateme"
+      ]
+    ],
+    "median_tokens": 20,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "14": {
+    "first_three": [
+      [
+        [],
+        "The information required by this Item will be included in the 2024 Proxy Stateme"
+      ]
+    ],
+    "median_tokens": 20,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "15": {
+    "first_three": [
+      [
+        [
+          "(1)All financial statements"
+        ],
+        "(1)All financial statements\nIndex to Consolidated Financial Statements | Page\nCo"
+      ],
+      [
+        [
+          "(1)All financial statements"
+        ],
+        "*Ernst & Young LLP, PCAOB Firm ID No. 00042."
+      ],
+      [
+        [
+          "(2)Financial Statement Schedules"
+        ],
+        "All financial statement schedules have been omitted, since the required informat"
+      ]
+    ],
+    "median_tokens": 45,
+    "paragraphs": 11,
+    "tables": 3
+  },
+  "16": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ],
+      [
+        [
+          "SIGNATURES"
+        ],
+        "Pursuant to the requirements of Section 13 or 15(d) of the Securities Exchange A"
+      ],
+      [
+        [
+          "SIGNATURES"
+        ],
+        "Date: November 2, 2023 By: /s/ Luca Maestri Luca Maestri Senior Vice President, "
+      ]
+    ],
+    "median_tokens": 7.0,
+    "paragraphs": 16,
+    "tables": 0
+  },
+  "1A": {
+    "first_three": [
+      [
+        [],
+        "The Company's business, reputation, results of operations, financial condition a"
+      ],
+      [
+        [],
+        "Because of the following factors, as well as other factors affecting the Company"
+      ],
+      [
+        [],
+        "This section should be read in conjunction with Part II, Item 7, \"Management's D"
+      ]
+    ],
+    "median_tokens": 83.5,
+    "paragraphs": 100,
+    "tables": 0
+  },
+  "1B": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ]
+    ],
+    "median_tokens": 1,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "1C": {
+    "first_three": [
+      [
+        [],
+        "Not applicable."
+      ]
+    ],
+    "median_tokens": 2,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "2": {
+    "first_three": [
+      [
+        [],
+        "The Company's headquarters is located in Cupertino, California. As of September "
+      ]
+    ],
+    "median_tokens": 76,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "3": {
+    "first_three": [
+      [
+        [],
+        "Epic Games Epic Games, Inc. (\"Epic\") filed a lawsuit in the U.S. District Court "
+      ],
+      [
+        [],
+        "Masimo Masimo Corporation and Cercacor Laboratories, Inc. (together, \"Masimo\") f"
+      ],
+      [
+        [],
+        "Other Legal Proceedings The Company is subject to other legal proceedings and cl"
+      ]
+    ],
+    "median_tokens": 149,
+    "paragraphs": 3,
+    "tables": 0
+  },
+  "4": {
+    "first_three": [
+      [
+        [],
+        "Not applicable."
+      ]
+    ],
+    "median_tokens": 2,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "5": {
+    "first_three": [
+      [
+        [],
+        "The Company's common stock is traded on The Nasdaq Stock Market LLC under the sy"
+      ],
+      [
+        [
+          "Holders"
+        ],
+        "As of October 20, 2023, there were 23,763 shareholders of record."
+      ],
+      [
+        [
+          "Purchases of Equity Securities by the Issuer and Affiliated Purchasers"
+        ],
+        "Share repurchase activity during the three months ended September 30, 2023 was a"
+      ]
+    ],
+    "median_tokens": 66.0,
+    "paragraphs": 8,
+    "tables": 2
+  },
+  "7": {
+    "first_three": [
+      [
+        [],
+        "The following discussion should be read in conjunction with the consolidated fin"
+      ],
+      [
+        [
+          "Fiscal Period"
+        ],
+        "The Company's fiscal year is the 52- or 53-week period that ends on the last Sat"
+      ],
+      [
+        [
+          "Fiscal Year Highlights"
+        ],
+        "The Company's total net sales were $383.3 billion and net income was $97.0 billi"
+      ]
+    ],
+    "median_tokens": 37,
+    "paragraphs": 61,
+    "tables": 6
+  },
+  "7A": {
+    "first_three": [
+      [
+        [],
+        "The Company is exposed to economic risk from interest rates and foreign exchange"
+      ],
+      [
+        [
+          "Interest Rate Risk"
+        ],
+        "The Company is primarily exposed to fluctuations in U.S. interest rates and thei"
+      ],
+      [
+        [
+          "Interest Rate Risk"
+        ],
+        "The following table sets forth potential impacts on the Company's investment por"
+      ]
+    ],
+    "median_tokens": 63.0,
+    "paragraphs": 6,
+    "tables": 1
+  },
+  "8": {
+    "first_three": [
+      [
+        [],
+        "Item 8. Financial Statements and Supplementary Data\nIndex to Consolidated Financ"
+      ],
+      [
+        [],
+        "All financial statement schedules have been omitted, since the required informat"
+      ],
+      [
+        [
+          "CONSOLIDATED STATEMENTS OF OPERATIONS"
+        ],
+        "(In millions, except number of shares, which are reflected in thousands, and per"
+      ]
+    ],
+    "median_tokens": 53,
+    "paragraphs": 155,
+    "tables": 36
+  },
+  "9": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ]
+    ],
+    "median_tokens": 1,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "9A": {
+    "first_three": [
+      [
+        [
+          "Evaluation of Disclosure Controls and Procedures"
+        ],
+        "Based on an evaluation under the supervision and with the participation of the C"
+      ],
+      [
+        [
+          "Inherent Limitations over Internal Controls"
+        ],
+        "The Company's internal control over financial reporting is designed to provide r"
+      ],
+      [
+        [
+          "Inherent Limitations over Internal Controls"
+        ],
+        "(i)pertain to the maintenance of records that, in reasonable detail, accurately "
+      ]
+    ],
+    "median_tokens": 54.5,
+    "paragraphs": 8,
+    "tables": 0
+  },
+  "9B": {
+    "first_three": [
+      [
+        [
+          "Insider Trading Arrangements"
+        ],
+        "On August 30, 2023, Deirdre O'Brien, the Company's Senior Vice President, Retail"
+      ]
+    ],
+    "median_tokens": 124,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "9C": {
+    "first_three": [
+      [
+        [],
+        "Not applicable."
+      ]
+    ],
+    "median_tokens": 2,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "front": {
+    "first_three": [
+      [
+        [
+          "FORM 10-K"
+        ],
+        "(Mark One) ☒ ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXC"
+      ],
+      [
+        [
+          "FORM 10-K"
+        ],
+        "For the fiscal year ended September 30, 2023"
+      ],
+      [
+        [
+          "FORM 10-K"
+        ],
+        "or ☐ TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANG"
+      ]
+    ],
+    "median_tokens": 24.0,
+    "paragraphs": 26,
+    "tables": 1
+  }
+}
