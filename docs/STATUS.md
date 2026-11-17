@@ -4,8 +4,9 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Phase:** **slice 0 complete** (0.1–0.4 merged, CI green). Next task: **slice 1, task 1.1**
-  (EDGAR client). Briefs for every slice-1 task are in `docs/briefs/`.
+- **Phase:** slice 1 in progress. Done: 1.1 (EDGAR client). Next task: **1.2** (universes,
+  manifest, fetcher, `fl ingest`). Briefs for every slice-1 task are in `docs/briefs/`.
+- **Lead:** Opus 5.5 from 2026-11-17.
 - **Author actions outstanding:** change the port in `FL_DATABASE_URL` in `.env` to 5433;
   run `sh scripts/install_hooks.sh` once to install the pre-commit guard.
 - **Blockers:** none. `uv` 0.13.8 with Python 3.12.16 and Docker 29.9.3 (daemon running)
@@ -43,6 +44,14 @@ hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1
 judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
 
 ## Log
+
+### 2026-11-17 — task 1.1 done
+- EDGAR client merged: shared 8 requests/second token bucket (retries included), backoff
+  with jitter on 429/403/5xx/timeouts, `Retry-After` honoured, only `https` to
+  `www.sec.gov`/`data.sec.gov`, the User-Agent is never logged or put in errors.
+- Review found that 3xx responses were returned as success (a redirect page would have
+  been stored as a filing). Sent back; now only 2xx is success and redirects are not
+  followed, with tests for 301/302/304. 53 tests pass; CI green.
 
 ### 2026-11-15 — briefs complete
 - `docs/briefs/` now has one brief for every task of slices 0 and 1 (0.1–0.4, 1.1–1.16)
