@@ -8,8 +8,8 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
   tasks 1.3–1.5 built in full (decided 2026-11-17). The ingestion implementation (1.2) is merged. Use XOM FY2021–2023 for the first Item 1A comparison. Choose the broader company lists at R3.
 - **Next design review:** bring the generated HTML, SEC source links and baseline error note as soon as R1 is reproducible. Reader sessions follow this review.
 - **Lead:** Opus 5.5 from 2026-11-17.
-- **Author actions outstanding:** change the port in `FL_DATABASE_URL` in `.env` to 5433;
-  run `sh scripts/install_hooks.sh` once to install the pre-commit guard.
+- **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
+  (2026-11-17).
 - **Blockers:** none. `uv` 0.13.8 with Python 3.12.16 and Docker 29.9.3 (daemon running)
   were verified on 2026-11-15.
 - **Lead:** Fable 5.2 until 2026-11-16, then Opus 5.5, working from `docs/briefs/`.
@@ -43,6 +43,15 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-17 — task 1.3 done
+- `extract_blocks` merged with four fixture 10-Ks (Apple and XOM, FY2022–2023). XOM FY2023
+  Item 1A reads cleanly: one block per risk, group titles as headings, bullets kept.
+- Review found that dash-only table cells (zeros) were dropped, shifting values into the
+  wrong columns. Sent back; dashes now stay in place as `—`. 139 tests pass; CI green.
+- Exxon FY2022–2023 have no combined "Items 1 and 2" heading: SPEC §16 and briefs 1.2–1.4
+  corrected. In the fixtures the table of contents comes out as a table block (note added
+  to brief 1.4). Next: task 1.4.
 
 ### 2026-11-17 — reader-first roadmap adopted
 - R1 is ready for implementation. The R1–R5 brief records the evidence and decisions for each review.
