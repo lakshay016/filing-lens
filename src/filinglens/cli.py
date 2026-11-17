@@ -7,6 +7,7 @@ import logging
 import typer
 
 import filinglens
+from filinglens.compare import cli as compare_cli
 from filinglens.config import get_settings
 from filinglens.db import cli as db_cli
 from filinglens.edgar import cli as edgar_cli
@@ -20,6 +21,7 @@ app.add_typer(db_cli.app, name="db")
 app.add_typer(edgar_cli.app)  # no name: registers `fl ingest` at the top level
 app.add_typer(edgar_cli.universe_app, name="universe")
 app.add_typer(parse_cli.app)  # no name: registers `fl parse` at the top level
+app.add_typer(compare_cli.app)  # no name: registers `fl compare` at the top level
 
 
 @app.callback()
