@@ -6,7 +6,7 @@ brief starts by pointing here.
 
 Written 2026-11-15 by the outgoing lead. Decisions made while writing the briefs are
 recorded in SPEC §16 (rows dated 2026-11-15). Where a brief is more specific than the
-spec, the brief applies.
+spec, the brief applies within its selected component. SPEC §14 and the [reader-first brief](reader-first.md) govern scheduling, scope and release evaluation.
 
 ## Part A — rules for the implementing agent
 
@@ -116,17 +116,7 @@ uv run pytest
 
 ### Order and parallelism
 
-```
-0.1 → (0.2 ∥ 0.3) → 0.4 → 1.1 → 1.2 → [author: companies] → 1.3 → 1.4 → 1.5 → 1.6
-      → 1.7 → 1.8 → 1.9 → [author: 10 dev pairs] → 1.10 → [author: 20 test pairs] → 1.11
-      → 1.12 → 1.13 → [author: labels] → 1.14 → 1.15 [author, ≥ 7 days after 1.13] → 1.16
-```
-
-Tasks that do not need the author's company list and may be done while waiting for it:
-1.3 (fixtures are fixed public filings), 1.4, 1.5, 1.7, 1.8, 1.12 (code and unit tests
-only; the runs over `t1_rag` wait). 1.9's tool can be built while 1.7/1.8 are in review;
-it shares no files with them. While the author hand-aligns (1.9, 1.11), build 1.12 and
-the code of 1.13. Never run two writers on the same files.
+Start with R1 in the [reader-first brief](reader-first.md). Task numbers 1.3–1.16 identify reusable component designs. Dispatch only the portions selected for the current milestone. Review the baseline before reader sessions, reader findings before algorithm selection, development results before the held-out run, and release evidence before history or Q&A work. Refresh a component brief's dependencies and acceptance checks when a review activates it.
 
 ### Models
 
