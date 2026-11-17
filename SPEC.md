@@ -1,6 +1,6 @@
 # Filing Lens — Build Specification
 
-Version 1.0 · 2026-11-13 · Status: approved design, nothing built yet
+Revision 2026-11-17 · Ingestion implementation merged · Reader-first delivery plan
 
 This is the single source of truth for building Filing Lens. It is written so that an
 implementer (a person or a coding model) who was not part of the design discussion can
@@ -19,7 +19,7 @@ restrictions and limitations), [docs/STATUS.md](docs/STATUS.md) (current progres
 - `[OPEN]` marks a decision that is deliberately deferred, with a default to use until
   it is resolved.
 - `[EXPANSION]` marks work that is designed for but not built in the current slices.
-- Build in the order of §14. Each slice ends in something that stands alone on a resume.
+- Build in the order of §14. Sections 5–11 describe candidate components. Schedule them only when the corresponding review selects them.
 
 ---
 
@@ -222,6 +222,7 @@ range. Every command takes `--universe`.
 
 | Name | Contents | Used for | Size (estimate) |
 |---|---|---|---|
+| `demo` | XOM, original 10-K, FY2021–2023 | R1 development comparison | 3 filings |
 | `t0_dev` | 5 hand-picked companies, 10-K, fiscal 2018–present | Development, unit/integration tests | ~35 filings |
 | `t1_rag` | Every company in the FinanceBench open set + the author's holdings; 10-K, fiscal 2014–present | RAG, alerts, alignment eval, deployed app | ~40–60 companies, ~500 filings |
 | `t2_lite` | Companies in SEC `company_tickers.json` (currently listed only), 10-K, fiscal 2010–present | Building and testing the signal pipeline and backtest engine | tens of thousands of filings |
@@ -590,7 +591,7 @@ shown without a summary; nothing else depends on the LLM.
 
 ### 7.7 Alert evaluation
 
-Sample 100 shown alerts from **held-out companies** (not the author's holdings: eight
+Use the full-digest R4 protocol in §14 for release decisions. Independently mark must-see changes before viewing output, judge every displayed text and numeric alert, and report misses and reading time. For a supplementary text-ranking diagnostic, sample 100 shown alerts from **held-out companies** (not the author's holdings: eight
 companies is too few and not representative). Judge each useful / not useful against
 the written guide. Report precision of shown alerts and precision@5 per filing, with a
 bootstrap interval over filings. Compare against a baseline that ranks by `1 − sim`
@@ -757,7 +758,8 @@ Same generator model, same prompts where applicable, cached calls, fixed seed.
 | Config | Adds |
 |---|---|
 | A0 | Naive: fixed 512-token chunks, dense top-5, single generation call |
-| A1 | Versioned index with deduplication + fiscal-period filter |
+| A0-time | A0 with fiscal-period filtering on ordinary passages |
+| A1 | Same period filter and retrieval budget over paragraph versions; compare directly with A0-time |
 | A2 | Hybrid BM25 + dense with RRF |
 | A3 | Cross-encoder rerank |
 | A4 | Router with XBRL and table routes |
@@ -1066,68 +1068,17 @@ on the laptop and uploads results. The hosted app only reads.
 
 ## 14. Build plan
 
-Each task lists its acceptance check. Do them in order within a slice.
+The completed foundation comprises tasks 0.1–0.4, the EDGAR client (1.1), and the ingestion implementation (1.2). The original task numbers identify component briefs. The delivery sequence and acceptance criteria below govern their use.
 
-### Slice 0 — skeleton (about 2 days)
-
-| # | Task | Done when |
+| Milestone | Work and acceptance | Decision at review |
 |---|---|---|
-| 0.1 | `pyproject.toml`, `uv`, Python 3.12, `src/` layout, `ruff`, `pytest`, `fl` CLI stub | `uv run fl --help` works; `uv run pytest` passes |
-| 0.2 | `docker-compose.yml` with Postgres + pgvector; Alembic initial migration for §12 slice-1 tables | `docker compose up` + `alembic upgrade head` succeed |
-| 0.3 | `.env.example`, `.gitignore` for `data/`, licensed-data guard hook | Guard fails on a planted `.parquet` |
-| 0.4 | GitHub Actions: lint + tests | Green on a PR |
+| R1 · Baseline comparison | One development company, three consecutive annual filings, two verified Item 1A redlines, source links and documented baseline errors | Inspect the HTML and source passages. Select fixes and reader tasks. |
+| R2 · Reader sessions | Independent must-see references, observed usual-workflow and baseline sessions, per-reader time and misses | Choose the first problem worth solving. |
+| R3 · Matching | Expand parser coverage and build only the matching features selected after R2. Compare with simple methods on development pairs | Review before freezing for the one held-out test run (§6.5). |
+| R4 · Portfolio release | Evaluate the full source-linked digest for Items 1A and 7, including numeric alerts, against blinded references and reading time | Release, narrow the claim, or keep the simpler baseline. |
+| R5 · History experiment | Evaluate a paragraph-history view and a fiscal-year-filtered search control on multi-year questions | Decide whether cited Q&A and further retrieval work are justified. |
 
-### Slice 1 — alignment engine and change alerts (about 3–4 weeks)
-
-| # | Task | Done when |
-|---|---|---|
-| 1.1 | EDGAR client: token bucket, retries, User-Agent check | Mocked tests for rate limit and backoff pass |
-| 1.2 | Index + manifest + fetcher; `fl ingest` | `t0_dev` ingests; re-run fetches nothing |
-| 1.3 | HTML → blocks | Fixture snapshots match; tables detected |
-| 1.4 | Item segmentation + parse status + `fl parse --report` | ≥ 90% `ok` on `t1_rag` for fiscal 2010+; failures listed with reasons |
-| 1.5 | Paragraphs + normalisation + hashes | Unit tests for masking of dates, money, percentages |
-| 1.6 | Ingest and parse `t1_rag` | Coverage table by year committed to `docs/RESULTS.md` |
-| 1.7 | IDF fit; aligner stages 1–2 | Unit + property tests pass |
-| 1.8 | Aligner stages 3–4; document measures | Unit tests for move/split/merge pass |
-| 1.9 | Labelling tool; **author hand-aligns 10 dev pairs** | Gold files exist |
-| 1.10 | Tune τ on dev; implement baselines; `fl eval alignment` | Dev results table |
-| 1.11 | **Author hand-aligns 20 test pairs**; single test run | Headline P/R/F1 with CIs recorded with commit hash |
-| 1.12 | Boilerplate shingles; numeric-delta check | Unit tests incl. the "10% → 35%" case |
-| 1.13 | Softmax classifier; **author labels 100 seed edges**, then active-learning batches | Grouped-CV macro-F1 reported |
-| 1.14 | Alert ranking, LLM summaries with fallback, `fl watch`, `fl backfill`, digest | Digest generated for one of the author's holdings |
-| 1.15 | Alert precision evaluation; κ relabel pass (≥ 7 days after 1.13) | Numbers in `docs/RESULTS.md` |
-| 1.16 | README with method, results table, limitations | Resume bullet 1 can be written |
-
-Human-only work in this slice (cannot be delegated to a model): 1.9, 1.11, the labels
-in 1.13, the judgements in 1.15. Budget roughly 15–25 hours for it.
-
-### Slice 2 — temporal RAG and evaluation (about 4 weeks)
-
-| # | Task | Done when |
-|---|---|---|
-| 2.1 | Version chains from edges; dedup ratio | Chain invariants tested; ratio reported |
-| 2.2 | LLM layer with cache, replay mode, privacy tags | Private request never reaches a non-private provider (test) |
-| 2.3 | Eval harness, FinanceBench download + accession mapping, A0 baseline | A0 numbers recorded |
-| 2.4 | Own 60-question set + route labels (**author**) | Files exist |
-| 2.5 | Own BM25; dense index; RRF (A1, A2) | Ladder rows recorded |
-| 2.6 | Reranker (A3) | Row recorded |
-| 2.7 | XBRL fact loader, concept map, formula registry, router (A4) | Routing accuracy reported separately |
-| 2.8 | Decomposition (A5); verification + retry (A6) | Rows recorded |
-| 2.9 | Judge calibration (**author labels 60 answers**) | κ reported |
-| 2.10 | FastAPI + Next.js UI + caps; deploy | Public URL works within $0 |
-| 2.11 | Thin MCP server; smoke eval in CI | Usable from an MCP client |
-
-### Slice 3 — research track (about 2–3 weeks, can overlap slice 2)
-
-| # | Task | Done when |
-|---|---|---|
-| 3.1 | Read the paper; resolve §11 `[VERIFY]` items; record in §16 | Decision log updated |
-| 3.2 | `t2_lite` ingest (text-only mode) and signal build | Coverage + descriptive stats reported |
-| 3.3 | `PriceSource` protocol + `SyntheticPriceSource` | — |
-| 3.4 | Backtest engine + the five tests of §11.5 | All pass |
-| 3.5 | `FreePriceSource`; end-to-end run; not-reportable enforcement | Watermarked output; report tool refuses it |
-| 3.6 | Write-up with the §11.4 claim | `docs/WRITEUP.md` |
-| 3.7 | `[EXPANSION]` §11.6 when the gate clears | Reportable results + compliance record |
+The [implementation and review brief](docs/briefs/reader-first.md) defines inputs, commands, deliverables, human work, and review packets. Summaries, hosted chat and MCP require a reader need and a later scope decision. The return study in §11 is unscheduled, including its synthetic fallback.
 
 ---
 
@@ -1155,6 +1106,8 @@ Designed for, not built now. Each names the seam where it attaches.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | R1 builds tasks 1.3–1.5 in full rather than a reduced Item 1A extractor | The parser is needed again at R3, and choosing the body heading over the table of contents (1.4) is what a shortcut gets wrong |
+| 2026-11-17 | Adopt R1–R5 (§14). Start with XOM FY2021–23, source-linked baseline and reader review. Defer classifier, LLM summaries, hosted chat, MCP and the return study pending separate decisions. | Measure misses and reading time early enough to change the design. Earlier component briefs describe options for later reviews. |
 | 2026-11-13 | Pivot from an eight-component plan to one alignment engine powering alerts, RAG and research | Depth over breadth; filing Q&A alone is commodity |
 | 2026-11-13 | No agent framework, no LLM-built knowledge graph, no fine-tuning | Cost, defensibility in interviews, scope |
 | 2026-11-13 | Hand-align Items 1A and 7 only; pre-fill exact matches only | Labelling cost; avoid biasing gold data toward the aligner |
@@ -1229,11 +1182,11 @@ Designed for, not built now. Each names the seam where it attaches.
 
 | Item | Default until resolved | Owner |
 |---|---|---|
-| WRDS approval, CRSP inclusion, blackout date, permitted publication, citation wording | Proceed with §11.4 fallback | Author → UofT library |
+| WRDS approval, CRSP inclusion, blackout date, permitted publication, citation wording | Unscheduled. Revisit §11.4 only if the research proposal is selected | Author → UofT library |
 | Free price source for engine testing | Choose at task 3.5; any source is fine since results are not reportable | Implementer |
 | Hosted Postgres and API host | Neon + whichever free container host fits the memory budget at task 2.10 | Implementer |
 | Exact free-tier model ids and limits | Fill `config/models.toml` from current provider docs at task 2.2 (a summary-only entry at 1.14) | Implementer |
-| The five `t0_dev` companies and final `t1_rag` list | Pick five from the author's holdings / FinanceBench at task 1.2 | Author |
+| The five `t0_dev` companies and final `t1_rag` list | Select at R3 after reader review. R1 uses the demo universe | Author |
 
 ---
 

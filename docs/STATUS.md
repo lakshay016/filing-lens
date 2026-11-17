@@ -4,9 +4,9 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Phase:** slice 1 in progress. Done: 1.1, 1.2 (code). **Waiting on the author:** choose the
-  five `t0_dev` companies and the `t1_rag` list (`[you]` 1.2). Meanwhile 1.3 can start: its
-  fixtures are fixed public filings and do not depend on that choice. Briefs for every slice-1 task are in `docs/briefs/`.
+- **Current task:** R1 in the [reader-first brief](briefs/reader-first.md), starting with parser
+  tasks 1.3–1.5 built in full (decided 2026-11-17). The ingestion implementation (1.2) is merged. Use XOM FY2021–2023 for the first Item 1A comparison. Choose the broader company lists at R3.
+- **Next design review:** bring the generated HTML, SEC source links and baseline error note as soon as R1 is reproducible. Reader sessions follow this review.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author actions outstanding:** change the port in `FL_DATABASE_URL` in `.env` to 5433;
   run `sh scripts/install_hooks.sh` once to install the pre-commit guard.
@@ -40,11 +40,12 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Things only the author can do (upcoming)
 
-Marked `[you]` in TODO.md. In slice 1: choose the five development companies (1.2),
-hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1.13),
-judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
+The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-17 — reader-first roadmap adopted
+- R1 is ready for implementation. The R1–R5 brief records the evidence and decisions for each review.
 
 ### 2026-11-17 — task 1.2 done (code)
 - Merged `fl ingest`, `fl universe check`, `fl universe draft-t1`, the filing manifest and

@@ -5,7 +5,8 @@
 1. [docs/STATUS.md](docs/STATUS.md) — where things stand and what is next.
 2. [docs/PRODUCT.md](docs/PRODUCT.md) — what the product is, restrictions and limitations.
 3. [SPEC.md](SPEC.md) — the technical design. It is the source of truth.
-4. [TODO.md](TODO.md) — task checklist; numbers match SPEC §14.
+4. [TODO.md](TODO.md) — active milestone checklist.
+5. [docs/briefs/reader-first.md](docs/briefs/reader-first.md) — implementation steps and when to return to the lead. SPEC §14 sets the delivery order for all component briefs.
 
 ## Rules that are never broken
 
