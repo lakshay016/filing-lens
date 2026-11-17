@@ -23,7 +23,7 @@ Task numbers match SPEC.md §14. `[you]` = only the author can do it.
 
 ## Slice 1 - alignment engine and change alerts (~3-4 weeks)
 - [x] 1.1 EDGAR client: token bucket, retries, User-Agent check
-- [ ] 1.2 Index + manifest + fetcher; `fl ingest`
+- [x] 1.2 Index + manifest + fetcher; `fl ingest` (code; the real `t0_dev` run waits for the company choice)
 - [ ] [you] 1.2 Pick the five `t0_dev` companies and final `t1_rag` list
 - [ ] 1.3 HTML -> blocks
 - [ ] 1.4 Item segmentation + parse status + `fl parse --report` (>= 90% ok)
