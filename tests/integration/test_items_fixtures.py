@@ -42,7 +42,7 @@ def test_fixture_segmentation(name: str) -> None:
     by_item = {s.item: s for s in seg.sections}
     assert by_item["1A"].chars > 20_000
     # The brief says Item 7 > 20,000 characters; measured, Apple's is 15,260 (FY2023) and
-    # 17,331 (FY2022), and Exxon's is a 170-character pointer. Apple Item 8 is the largest or second.
+    # 17,331 (FY2022), and Exxon's is a 170-character pointer.
     if name.startswith("aapl"):
         assert by_item["7"].chars > 15_000
         top_two = sorted((s.chars for s in seg.sections), reverse=True)[:2]

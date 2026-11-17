@@ -31,7 +31,7 @@ CANDIDATE_MAX_TEXT_CHARS = 200
 
 _POSITION = {code: i for i, code in enumerate(ITEM_ORDER)}
 _CANDIDATE_RE = re.compile(
-    r"^\s*items?\s+(\d{1,2}[abc]?)((?:\s*(?:,|and|&)\s*\d{1,2}[abc]?)*)\b\s*[\.:\-–—]?",
+    r"^\s*items?\s+(\d{1,2}[abc]?)((?:\s*(?:,|and|&)\s*\d{1,2}[abc]?)*)\b\s*[\.:\-\u2013\u2014]?",
     re.IGNORECASE,
 )
 _CODE_RE = re.compile(r"\d{1,2}[abc]?", re.IGNORECASE)
@@ -140,7 +140,9 @@ def segment(blocks: Sequence[Block], period_of_report: date | None) -> Segmentat
     sections: list[Section] = []
     first_heading = chosen[0].block_index if chosen else len(blocks)
     if first_heading > 0:
-        sections.append(Section(FRONT, None, 0, first_heading, _chars(blocks, 0, first_heading), ()))
+        sections.append(
+            Section(FRONT, None, 0, first_heading, _chars(blocks, 0, first_heading), ())
+        )
     for k, cand in enumerate(chosen):
         end = chosen[k + 1].block_index if k + 1 < len(chosen) else len(blocks)
         start = cand.block_index + 1

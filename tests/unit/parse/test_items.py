@@ -74,7 +74,9 @@ def body(codes: tuple[str, ...] = ALL, sizes: dict[str, int] | None = None) -> l
 
 
 def toc_doc(codes: tuple[str, ...] = ALL) -> list[Block]:
-    return doc(("s", "Cover page"), ("t", 800), ("s", "Table of contents"), *toc(codes), *body(codes))
+    return doc(
+        ("s", "Cover page"), ("t", 800), ("s", "Table of contents"), *toc(codes), *body(codes)
+    )
 
 
 def test_1_toc_then_body_picks_body_headings() -> None:
@@ -234,7 +236,10 @@ def test_10_long_text_block_is_not_a_candidate() -> None:
 def test_11_out_of_order_keeps_better_subset() -> None:
     specs: list[Spec] = []
     for code in ("1", "1A", "8", "7", "9"):
-        specs += [heading(code), ("t", {"8": 40_000, "7": 10_000}.get(code, SIZES.get(code, 3_000)))]
+        specs += [
+            heading(code),
+            ("t", {"8": 40_000, "7": 10_000}.get(code, SIZES.get(code, 3_000))),
+        ]
     seg = segment(doc(*specs), date(2023, 12, 31))
     found = [s.item for s in seg.sections if s.heading_index is not None]
     assert found == ["1", "1A", "8", "9"]
