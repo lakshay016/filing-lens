@@ -44,6 +44,15 @@ The first human study is R2. Arrange independent readers, collect must-see refer
 
 ## Log
 
+### 2026-11-17 — task 1.4 done
+- Item segmentation, parse status and `fl parse --report` merged. The table-of-contents
+  rule is tested and fails under the wrong gain definition. 174 tests pass; CI green.
+- Apple FY2022/2023 parse `ok`. Exxon FY2022/2023 parse `partial` (`short:7`, `short:8`):
+  Exxon's Items 7 and 8 point to a Financial Section after Item 16. Exxon Item 1A is
+  correct (29,578 characters, ends at Item 1B), so R1 is unaffected. Recorded in SPEC §17;
+  to be decided before Item 7 work (R4). `fl parse` has not yet run on real ingested data.
+  Next: task 1.5.
+
 ### 2026-11-17 — task 1.3 done
 - `extract_blocks` merged with four fixture 10-Ks (Apple and XOM, FY2022–2023). XOM FY2023
   Item 1A reads cleanly: one block per risk, group titles as headings, bullets kept.

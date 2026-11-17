@@ -10,6 +10,7 @@ import filinglens
 from filinglens.config import get_settings
 from filinglens.db import cli as db_cli
 from filinglens.edgar import cli as edgar_cli
+from filinglens.parse import cli as parse_cli
 
 app = typer.Typer(no_args_is_help=True, add_completion=False, help="Filing Lens")
 
@@ -18,6 +19,7 @@ app = typer.Typer(no_args_is_help=True, add_completion=False, help="Filing Lens"
 app.add_typer(db_cli.app, name="db")
 app.add_typer(edgar_cli.app)  # no name: registers `fl ingest` at the top level
 app.add_typer(edgar_cli.universe_app, name="universe")
+app.add_typer(parse_cli.app)  # no name: registers `fl parse` at the top level
 
 
 @app.callback()
