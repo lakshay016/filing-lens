@@ -1,0 +1,334 @@
+{
+  "blocks_by_kind": {
+    "heading": 295,
+    "table": 117,
+    "text": 778
+  },
+  "first_15_tables": [
+    [
+      "Documents Incorporated by Reference: Proxy Statement for the 2023 Annual Meeting of Shareholders (Part III)",
+      "EXXON MOBIL CORPORATION",
+      34
+    ],
+    [
+      "A. Summary of Oil and Gas Reserves at Year-End 2022",
+      "Proved Reserves | Crude Oil | Natural Gas Liquids | Bitumen | Synthetic Oil | Natural Gas | Oil-Equivalent Total All Products",
+      36
+    ],
+    [
+      "The table below summarizes production by final product sold and by geographic area for the last three years.",
+      "(thousands of barrels daily) | 2022 | 2021 | 2020",
+      45
+    ],
+    [
+      "The table below summarizes average production prices and average production costs by geographic area and by product type for the last three years.",
+      "(dollars per unit) | United States | Canada/ Other Americas | Europe | Africa | Asia | Australia/ Oceania | Total",
+      55
+    ],
+    [
+      "The table below summarizes average production prices and average production costs by geographic area and by product type for the last three years.",
+      "(dollars per unit) | United States | Canada/ Other Americas | Europe | Africa | Asia | Australia/ Oceania | Total",
+      28
+    ],
+    [
+      "A. Number of Net Productive and Dry Wells Drilled",
+      "2022 | 2021 | 2020",
+      33
+    ],
+    [
+      "A. Number of Net Productive and Dry Wells Drilled",
+      "2022 | 2021 | 2020",
+      34
+    ],
+    [
+      "A. Wells Drilling",
+      "Wells Drilling | Year-End 2022 | Year-End 2021",
+      17
+    ],
+    [
+      "A. Gross and Net Productive Wells",
+      "Gross and Net Productive Wells | Year-End 2022 | Year-End 2021",
+      18
+    ],
+    [
+      "B. Gross and Net Developed Acreage",
+      "Gross and Net Developed Acreage (thousands of acres) | Year-End 2022 | Year-End 2021",
+      18
+    ],
+    [
+      "C. Gross and Net Undeveloped Acreage",
+      "Gross and Net Undeveloped Acreage (thousands of acres) | Year-End 2022 | Year-End 2021",
+      18
+    ],
+    [
+      "Information with regard to refining capacity:",
+      "Refining Capacity At Year-End 2022 (1)",
+      35
+    ],
+    [
+      "Within the Energy Products segment, retail fuels sites sell products and services throughout the world through our Exxon, Esso, and Mobil brands.",
+      "Number of Retail Fuel Sites At Year-End 2022",
+      12
+    ],
+    [
+      "ExxonMobil manufactures and sells petrochemicals. The large/integrated chemical complexes supply olefins, polyolefins, and a wide variety of other petrochemical products.",
+      "Chemical Complex Capacity At Year-End 2022 (1)",
+      27
+    ],
+    [
+      "Reference is made to Item 12 in Part III of this report.",
+      "Issuer Purchases of Equity Securities for Quarter Ended December 31, 2022",
+      9
+    ]
+  ],
+  "first_60_headings": [
+    [
+      2,
+      "UNITED STATES"
+    ],
+    [
+      2,
+      "SECURITIES AND EXCHANGE COMMISSION"
+    ],
+    [
+      2,
+      "WASHINGTON, D.C. 20549"
+    ],
+    [
+      2,
+      "FORM 10-K"
+    ],
+    [
+      2,
+      "THE SECURITIES EXCHANGE ACT OF 1934"
+    ],
+    [
+      2,
+      "THE SECURITIES EXCHANGE ACT OF 1934"
+    ],
+    [
+      3,
+      "Exxon Mobil Corporation"
+    ],
+    [
+      3,
+      "New Jersey"
+    ],
+    [
+      3,
+      "5959 Las Colinas Boulevard, Irving, Texas 75039-2298"
+    ],
+    [
+      3,
+      "Common Stock, without par value"
+    ],
+    [
+      2,
+      "XOM"
+    ],
+    [
+      3,
+      "0.142% Notes due 2024"
+    ],
+    [
+      2,
+      "XOM24B"
+    ],
+    [
+      3,
+      "0.524% Notes due 2028"
+    ],
+    [
+      2,
+      "XOM28"
+    ],
+    [
+      3,
+      "0.835% Notes due 2032"
+    ],
+    [
+      2,
+      "XOM32"
+    ],
+    [
+      3,
+      "1.408% Notes due 2039"
+    ],
+    [
+      2,
+      "XOM39A"
+    ],
+    [
+      3,
+      "Class"
+    ],
+    [
+      3,
+      "Outstanding as of January 31, 2023"
+    ],
+    [
+      3,
+      "Common stock, without par value"
+    ],
+    [
+      3,
+      "Documents Incorporated by Reference: Proxy Statement for the 2023 Annual Meeting of Shareholders (Part III)"
+    ],
+    [
+      1,
+      "PART I"
+    ],
+    [
+      1,
+      "ITEM 1. BUSINESS"
+    ],
+    [
+      1,
+      "ITEM 1A. RISK FACTORS"
+    ],
+    [
+      3,
+      "Supply and Demand"
+    ],
+    [
+      3,
+      "Government and Political Factors"
+    ],
+    [
+      3,
+      "Climate Change and the Energy Transition"
+    ],
+    [
+      3,
+      "Operational and Other Factors"
+    ],
+    [
+      1,
+      "ITEM 1B. UNRESOLVED STAFF COMMENTS"
+    ],
+    [
+      1,
+      "ITEM 2. PROPERTIES"
+    ],
+    [
+      3,
+      "Information with regard to oil and gas producing activities follows:"
+    ],
+    [
+      3,
+      "1. Disclosure of Reserves"
+    ],
+    [
+      3,
+      "A. Summary of Oil and Gas Reserves at Year-End 2022"
+    ],
+    [
+      3,
+      "B. Technologies Used in Establishing Proved Reserves Additions in 2022"
+    ],
+    [
+      3,
+      "C. Qualifications of Reserves Technical Oversight Group and Internal Controls over Proved Reserves"
+    ],
+    [
+      3,
+      "2. Proved Undeveloped Reserves"
+    ],
+    [
+      3,
+      "3. Oil and Gas Production, Production Prices and Production Costs"
+    ],
+    [
+      3,
+      "A. Oil and Gas Production"
+    ],
+    [
+      3,
+      "B. Production Prices and Production Costs"
+    ],
+    [
+      3,
+      "4. Drilling and Other Exploratory and Development Activities"
+    ],
+    [
+      3,
+      "A. Number of Net Productive and Dry Wells Drilled"
+    ],
+    [
+      3,
+      "B. Exploratory and Development Activities Regarding Oil and Gas Resources Extracted by Mining Technologies"
+    ],
+    [
+      3,
+      "5. Present Activities"
+    ],
+    [
+      3,
+      "A. Wells Drilling"
+    ],
+    [
+      3,
+      "B. Review of Principal Ongoing Activities"
+    ],
+    [
+      3,
+      "United States"
+    ],
+    [
+      3,
+      "Canada / Other Americas"
+    ],
+    [
+      3,
+      "Europe"
+    ],
+    [
+      3,
+      "Africa"
+    ],
+    [
+      3,
+      "Asia"
+    ],
+    [
+      3,
+      "Australia / Oceania"
+    ],
+    [
+      3,
+      "Worldwide Exploration"
+    ],
+    [
+      3,
+      "6. Delivery Commitments"
+    ],
+    [
+      3,
+      "7. Oil and Gas Properties, Wells, Operations and Acreage"
+    ],
+    [
+      3,
+      "A. Gross and Net Productive Wells"
+    ],
+    [
+      3,
+      "B. Gross and Net Developed Acreage"
+    ],
+    [
+      3,
+      "C. Gross and Net Undeveloped Acreage"
+    ],
+    [
+      3,
+      "D. Summary of Acreage Terms"
+    ]
+  ],
+  "headings_by_level": {
+    "1": 25,
+    "2": 68,
+    "3": 185,
+    "4": 17
+  },
+  "sha1_of_block_texts": "f6ff430f30810f8af994545d865bd72711b1f1f6",
+  "total_chars": 410756
+}
