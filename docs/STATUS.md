@@ -4,8 +4,9 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Phase:** slice 1 in progress. Done: 1.1 (EDGAR client). Next task: **1.2** (universes,
-  manifest, fetcher, `fl ingest`). Briefs for every slice-1 task are in `docs/briefs/`.
+- **Phase:** slice 1 in progress. Done: 1.1, 1.2 (code). **Waiting on the author:** choose the
+  five `t0_dev` companies and the `t1_rag` list (`[you]` 1.2). Meanwhile 1.3 can start: its
+  fixtures are fixed public filings and do not depend on that choice. Briefs for every slice-1 task are in `docs/briefs/`.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author actions outstanding:** change the port in `FL_DATABASE_URL` in `.env` to 5433;
   run `sh scripts/install_hooks.sh` once to install the pre-commit guard.
@@ -44,6 +45,16 @@ hand-align 10 then 20 filing pairs (1.9, 1.11), label about 100–300 changes (1
 judge 100 alerts and do the one-week relabel (1.15). Roughly 15–25 hours in total.
 
 ## Log
+
+### 2026-11-17 — task 1.2 done (code)
+- Merged `fl ingest`, `fl universe check`, `fl universe draft-t1`, the filing manifest and
+  zstd raw storage. Tested against mocked EDGAR only: a second run makes no download
+  requests; amendments are `skipped`; a 404 becomes `failed` and is retried next run.
+  100 tests pass; CI green. No real download has been made yet.
+- Accepted, not fixed (small follow-ups): a company whose filing list fails after all
+  retries stops the whole ingest (re-running resumes); `primary_document` from SEC is used
+  unchecked as a file name. The FinanceBench raw-file URL in `edgar/cli.py` has not been
+  fetched yet; `draft-t1` exercises it first.
 
 ### 2026-11-17 — task 1.1 done
 - EDGAR client merged: shared 8 requests/second token bucket (retries included), backoff
