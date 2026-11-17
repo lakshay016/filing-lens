@@ -26,7 +26,8 @@ Milestones R1–R5 follow SPEC.md §14. Older task numbers identify component br
 Use the [implementation and review brief](docs/briefs/reader-first.md) for acceptance checks and handoff contents. Tick a review after recording its decision in SPEC §16.
 
 - [x] 1.1 EDGAR client and 1.2 ingest implementation merged. The broader universe run is outstanding.
-- [ ] R1 Build parser tasks 1.3–1.5 in full (1.3, 1.4 done); ingest XOM FY2021–2023, extract and verify Item 1A, generate both baseline comparisons, document errors, and verify reproducibility.
+- [x] R1 parser tasks 1.3–1.5 built in full.
+- [ ] R1 ingest XOM FY2021–2023, extract and verify Item 1A, generate both baseline comparisons, document errors, and verify reproducibility.
 - [ ] **Return for technical review** with the HTML and R1 note before expanding the parser or starting advanced alignment.
 - [ ] R2 [you] Arrange reader sessions and independent must-see references. Record time, misses and distracting alerts for each workflow.
 - [ ] Review reader evidence and select the next engineering change.

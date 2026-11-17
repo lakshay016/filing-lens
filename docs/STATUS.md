@@ -4,8 +4,8 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R1 in the [reader-first brief](briefs/reader-first.md), starting with parser
-  tasks 1.3–1.5 built in full (decided 2026-11-17). The ingestion implementation (1.2) is merged. Use XOM FY2021–2023 for the first Item 1A comparison. Choose the broader company lists at R3.
+- **Current task:** R1 in the [reader-first brief](briefs/reader-first.md). Parser tasks 1.3–1.5
+  are merged; next is the XOM demo universe, `fl compare` and the HTML page (R1 steps 1, 3–6). The ingestion implementation (1.2) is merged. Use XOM FY2021–2023 for the first Item 1A comparison. Choose the broader company lists at R3.
 - **Next design review:** bring the generated HTML, SEC source links and baseline error note as soon as R1 is reproducible. Reader sessions follow this review.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
@@ -43,6 +43,16 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-17 — task 1.5 done
+- Paragraphs, `norm_exact`/`norm_masked`, hashes and paragraph storage merged. 280 tests
+  pass; CI green. Lead probes: number/date/year-only edits mask equal (10% → 35% customer,
+  debt, headcount, reserves); word edits do not; `10-K`, `Item 7A`, `COVID-19`, `10b5-1`
+  keep their digits. XOM FY2023 Item 1A: 39 paragraphs.
+- Known limitations passed to brief 1.12: `Scope 1 and 2` is masked like any number; the
+  scale word after `$(1.2)` is not absorbed. Brief expectation "< 5% short paragraphs"
+  holds within Items 1, 1A, 7 but not whole-filing for Apple FY2023 (5.6%: "None.",
+  signatures, captions); left as measured.
 
 ### 2026-11-17 — task 1.4 done
 - Item segmentation, parse status and `fl parse --report` merged. The table-of-contents

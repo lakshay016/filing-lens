@@ -1,0 +1,378 @@
+{
+  "1": {
+    "first_three": [
+      [
+        [],
+        "Exxon Mobil Corporation was incorporated in the State of New Jersey in 1882. Div"
+      ],
+      [
+        [],
+        "Exxon Mobil Corporation has several divisions and hundreds of affiliates, many w"
+      ],
+      [
+        [],
+        "The energy and petrochemical industries are highly competitive, both within the "
+      ]
+    ],
+    "median_tokens": 84,
+    "paragraphs": 13,
+    "tables": 0
+  },
+  "10": {
+    "first_three": [
+      [
+        [],
+        "Reference is made to the section of this report titled \"Information about our Ex"
+      ],
+      [
+        [],
+        "Incorporated by reference to the following from the registrant's definitive prox"
+      ],
+      [
+        [],
+        "•The section entitled \"Election of Directors\";"
+      ]
+    ],
+    "median_tokens": 24,
+    "paragraphs": 5,
+    "tables": 0
+  },
+  "11": {
+    "first_three": [
+      [
+        [],
+        "Incorporated by reference to the sections entitled \"Director Compensation\", \"Com"
+      ]
+    ],
+    "median_tokens": 32,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "12": {
+    "first_three": [
+      [
+        [],
+        "The information required under Item 403 of Regulation S-K is incorporated by ref"
+      ],
+      [
+        [
+          "Weighted-Average Exercise Price of Outstanding Options, Warrants and Rights"
+        ],
+        "Number of Securities Remaining Available for Future Issuance Under Equity Compen"
+      ],
+      [
+        [
+          "Weighted-Average Exercise Price of Outstanding Options, Warrants and Rights"
+        ],
+        "Equity compensation plans approved by security holders"
+      ]
+    ],
+    "median_tokens": 18,
+    "paragraphs": 7,
+    "tables": 0
+  },
+  "13": {
+    "first_three": [
+      [
+        [],
+        "Incorporated by reference to the portion entitled \"Related Person Transactions a"
+      ]
+    ],
+    "median_tokens": 41,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "14": {
+    "first_three": [
+      [
+        [],
+        "Incorporated by reference to the portion entitled \"Audit Committee\" of the secti"
+      ]
+    ],
+    "median_tokens": 30,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "15": {
+    "first_three": [
+      [
+        [],
+        "(a)(1) and (2) Financial Statements: See Table of Contents of the Financial Sect"
+      ],
+      [
+        [],
+        "(b)(3) Exhibits: See Index to Exhibits of this report."
+      ]
+    ],
+    "median_tokens": 13.5,
+    "paragraphs": 2,
+    "tables": 0
+  },
+  "16": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ],
+      [
+        [
+          "FINANCIAL SECTION"
+        ],
+        "FINANCIAL SECTION\nTABLE OF CONTENTS\nBusiness Profile | 35\nFinancial Information "
+      ],
+      [
+        [
+          "BUSINESS PROFILE"
+        ],
+        "BUSINESS PROFILE\nEarnings (Loss) After Income Taxes | Average Capital Employed ("
+      ]
+    ],
+    "median_tokens": 70,
+    "paragraphs": 531,
+    "tables": 102
+  },
+  "1A": {
+    "first_three": [
+      [
+        [],
+        "ExxonMobil's financial and operating results are subject to a variety of risks i"
+      ],
+      [
+        [
+          "Supply and Demand"
+        ],
+        "The oil, gas, and petrochemical businesses are fundamentally commodity businesse"
+      ],
+      [
+        [
+          "Supply and Demand"
+        ],
+        "Economic conditions. The demand for energy and petrochemicals is generally linke"
+      ]
+    ],
+    "median_tokens": 88.5,
+    "paragraphs": 38,
+    "tables": 0
+  },
+  "1B": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ]
+    ],
+    "median_tokens": 1,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "2": {
+    "first_three": [
+      [
+        [
+          "A. Summary of Oil and Gas Reserves at Year-End 2022"
+        ],
+        "The table below summarizes the oil-equivalent proved reserves in each geographic"
+      ],
+      [
+        [
+          "A. Summary of Oil and Gas Reserves at Year-End 2022"
+        ],
+        "A. Summary of Oil and Gas Reserves at Year-End 2022\nProved Reserves | Crude Oil "
+      ],
+      [
+        [
+          "A. Summary of Oil and Gas Reserves at Year-End 2022"
+        ],
+        "In the preceding reserves information, consolidated subsidiary and equity compan"
+      ]
+    ],
+    "median_tokens": 59,
+    "paragraphs": 97,
+    "tables": 13
+  },
+  "3": {
+    "first_three": [
+      [
+        [],
+        "ExxonMobil has elected to use a $1 million threshold for disclosing environmenta"
+      ],
+      [
+        [],
+        "On August 4, 2022, XTO Energy, Inc. (\"XTO\") received a letter from the Departmen"
+      ],
+      [
+        [],
+        "On November 21, 2022, the State of Texas, acting by and through its Attorney Gen"
+      ]
+    ],
+    "median_tokens": 78.0,
+    "paragraphs": 4,
+    "tables": 0
+  },
+  "4": {
+    "first_three": [
+      [
+        [],
+        "Not applicable. Information about our Executive Officers (positions and ages as "
+      ],
+      [
+        [
+          "Darren W. Woods"
+        ],
+        "Chairman of the Board and Chief Executive Officer (since January 1, 2017)"
+      ],
+      [
+        [
+          "Darren W. Woods"
+        ],
+        "Director and President (since January 1, 2016)"
+      ]
+    ],
+    "median_tokens": 11.0,
+    "paragraphs": 36,
+    "tables": 0
+  },
+  "5": {
+    "first_three": [
+      [
+        [],
+        "The principal market where ExxonMobil common stock (XOM) is traded is the New Yo"
+      ],
+      [
+        [],
+        "There were 310,437 registered shareholders of ExxonMobil common stock at Decembe"
+      ],
+      [
+        [],
+        "On January 30, 2023, the Corporation declared a $0.91 dividend per common share,"
+      ]
+    ],
+    "median_tokens": 23.0,
+    "paragraphs": 6,
+    "tables": 1
+  },
+  "7": {
+    "first_three": [
+      [
+        [],
+        "Reference is made to the section entitled \"Management's Discussion and Analysis "
+      ]
+    ],
+    "median_tokens": 26,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "7A": {
+    "first_three": [
+      [
+        [],
+        "Reference is made to the section entitled \"Market Risks\" in the Financial Sectio"
+      ]
+    ],
+    "median_tokens": 51,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "8": {
+    "first_three": [
+      [
+        [],
+        "Reference is made to the following in the Financial Section of this report:"
+      ],
+      [
+        [],
+        "•Consolidated financial statements, together with the report thereon of Pricewat"
+      ],
+      [
+        [],
+        "•\"Supplemental Information on Oil and Gas Exploration and Production Activities\""
+      ]
+    ],
+    "median_tokens": 13,
+    "paragraphs": 5,
+    "tables": 0
+  },
+  "9": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ]
+    ],
+    "median_tokens": 1,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "9A": {
+    "first_three": [
+      [
+        [
+          "Management's Evaluation of Disclosure Controls and Procedures"
+        ],
+        "As indicated in the certifications in Exhibit 31 of this report, the Corporation"
+      ],
+      [
+        [
+          "Management's Report on Internal Control Over Financial Reporting"
+        ],
+        "Management, including the Corporation's Chief Executive Officer, Chief Financial"
+      ],
+      [
+        [
+          "Management's Report on Internal Control Over Financial Reporting"
+        ],
+        "PricewaterhouseCoopers LLP, an independent registered public accounting firm, au"
+      ]
+    ],
+    "median_tokens": 62.5,
+    "paragraphs": 4,
+    "tables": 0
+  },
+  "9B": {
+    "first_three": [
+      [
+        [],
+        "None."
+      ]
+    ],
+    "median_tokens": 1,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "9C": {
+    "first_three": [
+      [
+        [],
+        "Not applicable."
+      ]
+    ],
+    "median_tokens": 2,
+    "paragraphs": 1,
+    "tables": 0
+  },
+  "front": {
+    "first_three": [
+      [
+        [
+          "FORM 10-K"
+        ],
+        "☑ ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF"
+      ],
+      [
+        [
+          "THE SECURITIES EXCHANGE ACT OF 1934"
+        ],
+        "For the fiscal year ended December 31, 2022"
+      ],
+      [
+        [
+          "THE SECURITIES EXCHANGE ACT OF 1934"
+        ],
+        "or ☐ TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF"
+      ]
+    ],
+    "median_tokens": 12.0,
+    "paragraphs": 22,
+    "tables": 1
+  }
+}
