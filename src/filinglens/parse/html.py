@@ -177,6 +177,12 @@ def _is_empty_cell(text: str) -> bool:
     return all(ch in _EMPTY_CELL_CHARS or ch.isspace() for ch in text)
 
 
+def _is_dash_cell(text: str) -> bool:
+    """Only a dash (optionally with a glued ``$``): a value, not a spacer."""
+    core = text.replace("$", "").strip()
+    return bool(core) and all(ch in "\u2014\u2013-" for ch in core)
+
+
 def _table_rows(table: etree._Element) -> list[list[str]]:
     """Cleaned cell texts per row (empty rows kept as empty lists is not needed)."""
     rows: list[list[str]] = []
@@ -203,6 +209,9 @@ def _render_data_table(rows: list[list[str]]) -> str | None:
             elif cell in ("%", ")"):
                 if tokens:
                     tokens[-1] += cell
+            elif _is_dash_cell(cell):
+                tokens.append("\u2014")  # a zero or n/a value keeps its column
+                prefix = ""
             elif not _is_empty_cell(cell):
                 tokens.append(prefix + cell)
                 prefix = ""

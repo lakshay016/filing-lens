@@ -57,7 +57,7 @@ def test_data_table_pipe_rows_with_glued_symbols() -> None:
     )
     (block,) = blocks(table)
     assert block.kind == "table"
-    assert block.text == "Net sales | $1,234 | 12%\nMargin | (3,400)"
+    assert block.text == "Net sales | $1,234 | 12%\nMargin | (3,400) | \u2014"
 
 
 def test_three_by_three_numeric_table_is_data() -> None:
@@ -251,3 +251,17 @@ def test_deterministic_and_source_line() -> None:
     first = extract_blocks(html)
     assert first == extract_blocks(html)
     assert [b.source_line for b in first] == [2, 3]
+
+
+def test_dash_cells_are_values_and_keep_their_column() -> None:
+    table = (
+        "<table>"
+        + _row("Cash", "$", "28,359", "$", "\u2014", "$", "\u2014", "$", "28,359")
+        + _row("Other", "\u2013", "-", "", "4", "5", "6")
+        + "</table>"
+    )
+    (block,) = blocks(table)
+    assert block.text.splitlines() == [
+        "Cash | $28,359 | \u2014 | \u2014 | $28,359",
+        "Other | \u2014 | \u2014 | 4 | 5 | 6",
+    ]
