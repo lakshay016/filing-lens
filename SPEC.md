@@ -1187,6 +1187,7 @@ Designed for, not built now. Each names the seam where it attaches.
 | Free price source for engine testing | Choose at task 3.5; any source is fine since results are not reportable | Implementer |
 | Hosted Postgres and API host | Neon + whichever free container host fits the memory budget at task 2.10 | Implementer |
 | Exact free-tier model ids and limits | Fill `config/models.toml` from current provider docs at task 2.2 (a summary-only entry at 1.14) | Implementer |
+| Relocated Items: some filers (Exxon Mobil FY2022–2023) answer Items 7 and 8 with a one-line pointer to a Financial Section after Item 16, so the MD&A is parsed as part of Item 16 and the filing is `partial` (`short:7`, `short:8`) | Accept: Item 1A is unaffected (R1). Decide before Item 7 work (R4) whether to map a relocated section back to Items 7/8; measure how common it is in the R3 coverage run first | Lead |
 | The five `t0_dev` companies and final `t1_rag` list | Select at R3 after reader review. R1 uses the demo universe | Author |
 
 ---
