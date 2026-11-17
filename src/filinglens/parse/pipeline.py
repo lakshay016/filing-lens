@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import statistics
 import traceback
 from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
@@ -13,10 +14,11 @@ from typing import Any
 import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
-from filinglens.db.models import Company, Filing
+from filinglens.db.models import AlignmentPair, Company, Filing, Paragraph
 from filinglens.edgar.store import raw_path, read_raw
 from filinglens.parse.html import NotHtmlError, extract_blocks
 from filinglens.parse.items import Segmentation, segment
+from filinglens.parse.paragraphs import ParagraphRecord, build_paragraphs
 from filinglens.versions import PARSER_VERSION
 
 logger = logging.getLogger(__name__)
@@ -32,10 +34,47 @@ class ParseSummary:
     failed: int
 
 
-def _fail(filing: Filing, reason: str) -> None:
+def _replace_paragraphs(
+    session: Session, filing: Filing, records: Sequence[ParagraphRecord]
+) -> None:
+    """Delete this filing's alignments and paragraphs, then store ``records``.
+
+    Paragraph ids change, so alignments of this filing (as old or new side; their edges
+    cascade) are stale. Runs in the caller's transaction.
+    """
+    session.execute(
+        sa.delete(AlignmentPair).where(
+            sa.or_(
+                AlignmentPair.old_filing_id == filing.id, AlignmentPair.new_filing_id == filing.id
+            )
+        )
+    )
+    session.execute(sa.delete(Paragraph).where(Paragraph.filing_id == filing.id))
+    if records:
+        session.execute(
+            sa.insert(Paragraph),
+            [
+                {
+                    "filing_id": filing.id,
+                    "item": r.item,
+                    "seq": r.seq,
+                    "heading_path": list(r.heading_path),
+                    "text": r.text,
+                    "is_table": r.is_table,
+                    "n_tokens": r.n_tokens,
+                    "exact_hash": r.exact_hash,
+                    "masked_hash": r.masked_hash,
+                }
+                for r in records
+            ],
+        )
+
+
+def _fail(session: Session, filing: Filing, reason: str) -> None:
     filing.parse_status = "failed"
     filing.parse_notes = {"status_reasons": [reason], "items": {}, "combined": {}}
     filing.parser_version = PARSER_VERSION
+    _replace_paragraphs(session, filing, [])  # a failed filing stores none
 
 
 def parse_filing(session: Session, filing: Filing, data_dir: Path) -> Segmentation | None:
@@ -48,18 +87,18 @@ def parse_filing(session: Session, filing: Filing, data_dir: Path) -> Segmentati
         path = raw_path(data_dir, filing.cik, filing.accession, filing.primary_document)
         blocks = extract_blocks(read_raw(path))
         segmentation = segment(blocks, filing.period_of_report)
+        records = build_paragraphs(blocks, segmentation) if segmentation.status != "failed" else []
     except NotHtmlError:
-        _fail(filing, "not_html")
+        _fail(session, filing, "not_html")
         return None
     except Exception as exc:
         logger.error("parse failed for %s:\n%s", filing.accession, traceback.format_exc())
-        _fail(filing, f"error:{type(exc).__name__}")
+        _fail(session, filing, f"error:{type(exc).__name__}")
         return None
     filing.parse_status = segmentation.status
     filing.parse_notes = segmentation.notes
     filing.parser_version = PARSER_VERSION
-    # HOOK (task 1.5): normalise blocks and store paragraphs for each section here,
-    # inside this transaction, replacing the filing's previous paragraphs.
+    _replace_paragraphs(session, filing, records)
     return segmentation
 
 
@@ -132,6 +171,24 @@ def build_report(session: Session, ciks: Sequence[int]) -> str:
     out.append(line("total", total))
     if unparsed:
         out.append(f"({unparsed} fetched filings not parsed yet)")
+    counts = [
+        n
+        for (n,) in session.execute(
+            sa.select(sa.func.count(Paragraph.id))
+            .select_from(Filing)
+            .outerjoin(Paragraph, Paragraph.filing_id == Filing.id)
+            .where(
+                Filing.cik.in_(list(ciks)),
+                Filing.fetch_status == "ok",
+                Filing.parse_status.in_(("ok", "partial")),
+            )
+            .group_by(Filing.id)
+        )
+    ]
+    out.append(
+        f"paragraphs stored: {sum(counts)} in {len(counts)} ok/partial filings, "
+        f"median {statistics.median(counts) if counts else 0:g} per filing"
+    )
 
     bad = [r for r in parsed if r.parse_status != "ok"]
     reason_counts = Counter(x for r in bad for x in _reasons(r.parse_notes))

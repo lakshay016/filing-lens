@@ -57,7 +57,7 @@ def test_parse_filing_sets_status_notes_version(db_session: Session, tmp_path: P
     seg = parse_filing(db_session, filing, tmp_path)
     assert seg is not None and seg.status == "ok"
     assert filing.parse_status == "ok"
-    assert filing.parser_version == PARSER_VERSION == "2"
+    assert filing.parser_version == PARSER_VERSION == "3"
     assert filing.parse_notes["status_reasons"] == []
     assert filing.parse_notes["items"]["1A"]["chars"] > 20_000
     assert filing.parse_notes["items"]["7"]["heading"].startswith("Item 7.")
