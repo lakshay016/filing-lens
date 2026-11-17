@@ -22,7 +22,7 @@ Task numbers match SPEC.md §14. `[you]` = only the author can do it.
 - [x] 0.4 GitHub Actions: lint + tests
 
 ## Slice 1 - alignment engine and change alerts (~3-4 weeks)
-- [ ] 1.1 EDGAR client: token bucket, retries, User-Agent check
+- [x] 1.1 EDGAR client: token bucket, retries, User-Agent check
 - [ ] 1.2 Index + manifest + fetcher; `fl ingest`
 - [ ] [you] 1.2 Pick the five `t0_dev` companies and final `t1_rag` list
 - [ ] 1.3 HTML -> blocks
