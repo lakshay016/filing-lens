@@ -187,7 +187,7 @@ class EdgarClient:
             status: int | None = None
             if response is not None:
                 status = response.status_code
-                if status < 400:
+                if 200 <= status < 300:
                     self._stats.bytes += len(response.content)
                     return response.content
                 retryable = status in _RETRY_STATUSES or status >= 500

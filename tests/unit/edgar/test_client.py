@@ -208,3 +208,23 @@ async def test_get_json(ft: FakeTime) -> None:
     respx.get(URL).mock(return_value=httpx.Response(200, json={"cik": 320193}))
     async with make_client(ft) as client:
         assert await client.get_json(URL) == {"cik": 320193}
+
+
+@pytest.mark.parametrize("status", [301, 302, 304])
+@respx.mock
+async def test_redirect_is_an_error(status: int, ft: FakeTime) -> None:
+    route = respx.get(URL).mock(
+        return_value=httpx.Response(
+            status, content=b"moved", headers={"Location": "https://www.sec.gov/other"}
+        )
+    )
+    other = respx.get("https://www.sec.gov/other").mock(return_value=httpx.Response(200))
+    async with make_client(ft) as client:
+        with pytest.raises(EdgarFetchError) as info:
+            await client.get_bytes(URL)
+        assert client.stats.failures == 1
+    assert info.value.status == status
+    assert info.value.attempts == 1
+    assert route.call_count == 1
+    assert other.call_count == 0
+    assert ft.sleeps == []
