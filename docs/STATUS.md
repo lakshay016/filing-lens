@@ -4,11 +4,7 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R2 sessions, author-led. The comparison is frozen at tag `r2-freeze`.
-  Apple FY2022→2023 Item 1A passed the source-only completeness check. Waiting on the
-  author: (1) a second pair from a reader's coverage (run `scripts/check_extraction.py` on
-  it before sessions), (2) the independent must-see reference list, frozen before anyone
-  sees a comparison, (3) the timed sessions.
+- **Current task:** R2 source validation. Microsoft FY2022→2023 was selected for the technical pilot. Both filings parsed as `ok` but failed the independent Item 1A body-heading check. Resolve the repeated page-header failure before generating the Microsoft page. Apple passed. The comparison remains frozen at `r2-freeze`. No human reader is recruited. See [R2 pairs](reviews/R2-pairs.md).
 - **Next design review:** after R2 reader sessions, bring per-reader times, source-linked must-see changes found and missed, and distracting alerts for both workflows. Escalate earlier if the corrections change the substantive output on the XOM example.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed

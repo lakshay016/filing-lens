@@ -97,14 +97,15 @@ of the script left a stretch in FY2023 marked unexplained because of a bug in th
 footer-pattern builder (the digit placeholder was escaped twice); it was fixed in the
 committed script before the results above were taken.
 
-## Second pair: chosen by the author from the reader's coverage
+## Pair 2 selected for the technical pilot: Microsoft, FY2022 → FY2023
 
-Placeholder. To add it:
+The lead selected Microsoft with the author's approval to choose without a recruited reader. It shares Apple's fiscal-year labels and provides a second technology issuer and filing layout. Both companies are development examples. Universe: `config/universes/r2_msft.toml`, CIK 789019. Ingestion fetched two originals and fetched zero on repeat. Both received parse status `ok`.
 
-1. The author names the company (the one the reader's coverage selects).
-2. Add its CIK to `ciks` in `config/universes/r2_dev.toml`, keeping 320193; widen
-   `fiscal_year_min` / `fiscal_year_max` if the pair needs other years.
-3. Run `fl ingest` twice (the second must fetch 0), `fl parse`, `fl parse --report`, then
-   `fl compare --universe config/universes/r2_dev.toml --item 1A --out data/r2/<name>-1a.html`.
-4. Record accessions, periods, filing dates, URLs, parse and Item 1A status, the source
-   checks and the counts here, in the same form as the Apple pair.
+| Fiscal year | Original filing | True body heading block | Selected block | Source-only check |
+|---|---|---:|---:|---|
+| 2022 | [SEC original](https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm) | 350 | 405 | FAIL, selected occurrence 8 of 15 |
+| 2023 | [SEC original](https://www.sec.gov/Archives/edgar/data/789019/000095017023035122/msft-20230630.htm) | 343 | 418 | FAIL, selected occurrence 11 of 15 |
+
+In both filings the body starts at the full heading “ITEM 1A. RISK FACTORS”. Segmentation chose a later repeated “Item 1A” page heading. The interior reconciliation matched all stored paragraphs against the truncated section, illustrating why the heading and interior checks must both pass. Reproduce with `uv run python scripts/check_extraction.py --accession ACC --item 1A` for `0001564590-22-026876` and `0000950170-23-035122`.
+
+**Decision:** Hold the Microsoft comparison page. The next engineering ticket is to fix repeated page headings during Item segmentation, cover this pattern with a regression test and rerun the source-only checks for Microsoft and Apple. Track parser provenance and regenerate affected data before building the Microsoft page. Keep the frozen comparison rules. Human references and timed sessions remain pending recruitment.
