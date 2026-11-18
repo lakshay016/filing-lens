@@ -29,11 +29,12 @@ Use the [implementation and review brief](docs/briefs/reader-first.md) for accep
 - [x] R1 parser tasks 1.3–1.5 built in full.
 - [x] R1 XOM comparison generated and independently reproduced from the review branch. Both pairs' HTML matched after excluding run metadata.
 - [x] R1 technical review completed. Preserve the original baseline for comparison.
-- [ ] Before timed R2 sessions, make three corrections on the R1 implementation and regenerate the reader packet:
+- [x] Before timed R2 sessions, make three corrections on the R1 implementation and regenerate the reader packet (PR #15, frozen at tag `r2-freeze`; strict key kept, 2026-11-18):
   1. Use a comparison key that retains financially meaningful signs, units and comparators. Test a sign reversal, a currency change and a formatting-only whitespace change.
   2. Check §6.1 eligibility before building each pair. A missing intervening filing must produce an explicit gap and no annual comparison across it.
   3. Label counts as standalone additions/removals and explain that changed groups can contain new or removed passages. In unresolved groups, display readable earlier/later text without whole-paragraph strikethrough. Retain inline changes for 1×1 groups. Verify with FY2023 ¶16 and the FY2023 ¶12 control.
-- [ ] Prepare two fresh Item 1A development pairs for R2. Start with Apple FY2022→2023 (existing fixtures) and a second, comparably sized pair from the reader's coverage. Check both sections, reserve both companies for development and freeze the independent reader's reference list before sessions. XOM is the walkthrough only.
+- [ ] Apple FY2022→2023 Item 1A extraction completeness check (source-only: body heading, ordered interior text reconciled with the raw filing, unexplained gaps reported). Must pass before sessions.
+- [ ] Prepare two fresh Item 1A development pairs for R2 (Apple page generated; second pair waits for the reader's company). Start with Apple FY2022→2023 (existing fixtures) and a second, comparably sized pair from the reader's coverage. Check both sections, reserve both companies for development and freeze the independent reader's reference list before sessions. XOM is the walkthrough only.
 - [ ] R2 [you] Arrange reader sessions and independent must-see references. Record time, misses and distracting alerts for each workflow.
 - [ ] Review reader evidence and select the next engineering change.
 - [ ] R3 Choose broader dev/test company sets and run the coverage task 1.6 and the applicable parts of 1.7–1.10. [you] Produce blind gold alignments. Review dev results before freeze, then score the 1.11 test set once.

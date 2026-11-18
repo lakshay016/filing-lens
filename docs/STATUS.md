@@ -4,7 +4,10 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R1 reviewed using the comparison implementation at commit `8802f7e` and handoff at `57c478a`. The HTML was independently reproduced. The three pre-session corrections and R2 pair selection are in [TODO.md](../TODO.md).
+- **Current task:** R2 preparation. The comparison is frozen at tag `r2-freeze` (strict key,
+  PR #15). Next: the Apple Item 1A completeness check (source-only), then the author's
+  independent must-see reference list and the timed reader sessions. The second pair
+  waits for the author to name a company from a reader's coverage.
 - **Next design review:** after R2 reader sessions, bring per-reader times, source-linked must-see changes found and missed, and distracting alerts for both workflows. Escalate earlier if the corrections change the substantive output on the XOM example.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
@@ -42,6 +45,13 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-18 — pre-R2 corrections merged and frozen
+- PR #15 merged: sign/unit-preserving key, §6.1 gaps, standalone counts and neutral
+  unresolved groups. XOM FY2023 ¶16 now readable; ¶12 control keeps its inline marking.
+  316 tests pass; CI green. Author reviewed a534e83 and kept the strict key (SPEC §16);
+  four XOM punctuation-only edits now appear as changes. Tagged `r2-freeze`.
+- Apple FY2022→2023 page generated at `data/r2/apple-1a.html`; not opened by anyone.
 
 ### 2026-11-17 — task 1.5 done
 - Paragraphs, `norm_exact`/`norm_masked`, hashes and paragraph storage merged. 280 tests
