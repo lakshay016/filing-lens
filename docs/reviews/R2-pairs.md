@@ -56,6 +56,47 @@ the first and the last Item 1A paragraph were searched in it.
 Page: `/Users/lakshay/Documents/code/filing_lens/data/r2/apple-1a.html` (gitignored);
 `grep -c "<script"` prints 0. The page content was not read; no reader has seen it.
 
+## Extraction completeness (source-only check)
+
+Each filing is checked on its own against its own stored raw document; the two Apple
+filings were not compared with each other, and neither the comparison page nor
+`fl compare` output was opened or run for this check.
+
+Command (from the main checkout, run once per accession), commit `73b5c97`:
+
+```
+uv run python scripts/check_extraction.py --accession <ACCESSION> --item 1A
+```
+
+Method: the Item 1A text is rebuilt from the raw HTML with `lxml` without the block
+extractor (script, style, `ix:header` and `display:none` dropped, whitespace and quotes
+normalised), cut from the body Item 1A heading to the Item 1B heading, and every stored
+paragraph is located in it in order. The body heading is the last occurrence of the
+heading text before the first stored paragraph. Uncovered stretches of 40 characters or
+fewer are counted but not listed.
+
+| | FY2022 (0000320193-22-000108) | FY2023 (0000320193-23-000106) |
+|---|---|---|
+| Heading chosen | block 125 of 745, "Item 1A. Risk Factors", section 70,245 chars | block 126 of 730, "Item 1A. Risk Factors", section 67,381 chars |
+| Other blocks mentioning Item 1A | 60 (contents table), 61, 139, 337 (text, no heading) | 62 (contents table), 63, 331 (text, no heading) |
+| Heading check | pass: largest section; contents entry precedes it | pass: largest section; contents entry precedes it |
+| Raw section | 70,775 chars (heading occurrence 2 of 2) | 67,872 chars (heading occurrence 2 of 2) |
+| Paragraphs found in order | 107 / 107 | 100 / 100 |
+| Coverage | 99.24% (70,238 / 70,775) | 99.27% (67,374 / 67,872) |
+| Uncovered gaps of 40 chars or fewer | 14 (407 chars) | 11 (328 chars) |
+| Uncovered stretches over 40 chars | none | 1 (below) |
+| Unexplained stretches | 0 | 0 |
+| Result | PASS (exit 0) | PASS (exit 0) |
+
+FY2023 stretch over 40 characters: 48 chars, classified "running header/footer, heading":
+"Apple Inc. | 2023 Form 10-K | 14 Financial Risks" (the page footer followed by a
+sub-heading line that no stored paragraph carries in its heading path).
+
+Overall: PASS for both filings. Not interpreted and nothing fixed. Note: the first run
+of the script left a stretch in FY2023 marked unexplained because of a bug in the
+footer-pattern builder (the digit placeholder was escaped twice); it was fixed in the
+committed script before the results above were taken.
+
 ## Second pair: chosen by the author from the reader's coverage
 
 Placeholder. To add it:
