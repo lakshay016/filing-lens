@@ -1,0 +1,9 @@
+name = "demo"
+forms = ["10-K"]
+fiscal_year_min = 2021
+fiscal_year_max = 2023
+store_raw = true
+# The SEC ticker list now maps XOM to ExxonMobil Holdings Corp (CIK 2115436), which has no
+# 2021-2023 10-Ks. Those were filed by Exxon Mobil Corp, CIK 34088, so it is named directly.
+tickers = []
+ciks = [34088]
