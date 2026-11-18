@@ -26,7 +26,7 @@ class ParagraphRecord:
 
 
 def _section_paragraphs(
-    blocks: Sequence[Block], section: Section, first_seq: int
+    blocks: Sequence[Block], section: Section, first_seq: int, skip: frozenset[int]
 ) -> list[ParagraphRecord]:
     out: list[ParagraphRecord] = []
     stack: list[tuple[int, str]] = []  # (level, text), outermost first
@@ -56,6 +56,8 @@ def _section_paragraphs(
     for index in range(section.start, section.end):
         if index == section.heading_index:
             continue  # the Item's own heading is not part of its path
+        if index in skip:
+            continue  # a running Item page header: not a paragraph, not in any path
         block = blocks[index]
         if block.kind == "heading":
             flush()  # emitted under the path as it was before this heading
@@ -77,5 +79,5 @@ def _section_paragraphs(
 def build_paragraphs(blocks: Sequence[Block], segmentation: Segmentation) -> list[ParagraphRecord]:
     out: list[ParagraphRecord] = []
     for section in segmentation.sections:
-        out += _section_paragraphs(blocks, section, len(out))
+        out += _section_paragraphs(blocks, section, len(out), segmentation.skip_blocks)
     return out

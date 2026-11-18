@@ -185,6 +185,31 @@ def test_no_sections_no_paragraphs() -> None:
     assert build_paragraphs([text(LONG)], Segmentation((), "failed", {})) == []
 
 
+def test_running_item_headers_are_skipped() -> None:
+    blocks = [
+        head("ITEM 1. BUSINESS", 1),
+        text(LONG),
+        head("ITEM 1A. RISK FACTORS", 1),
+        head("Strategic Risks", 2),
+        text(LONG),
+        head("Item 1A", 1),  # running page header
+        text(LONG2),
+        head("Item 1A", 1),
+        text("Short tail."),  # under 40 characters: glued to the next block
+        head("Item 1A", 1),
+        text(LONG),
+        head("ITEM 2. PROPERTIES", 1),
+        text(LONG2),
+    ]
+    segmentation = segment(blocks, None)
+    assert segmentation.skip_blocks == frozenset({5, 7, 9})
+    out = build_paragraphs(blocks, segmentation)
+    risk = [p for p in out if p.item == "1A"]
+    assert [p.text for p in risk] == [LONG, LONG2, f"Short tail. {LONG}"]
+    assert all(p.heading_path == ("Strategic Risks",) for p in risk)
+    assert not any(p.text == "Item 1A" or "Item 1A" in p.heading_path for p in out)
+
+
 # --- fixture filings (no network, no database) ---------------------------------------
 
 PERIODS = {
