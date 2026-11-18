@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import itertools
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,7 +10,7 @@ from typing import Annotated
 import typer
 
 from filinglens.compare.diff import diff_paragraphs
-from filinglens.compare.load import FilingRef, filings_for, item_paragraphs
+from filinglens.compare.load import FilingRef, Gap, filings_for, item_paragraphs, plan_pairs
 from filinglens.compare.render import PairView, RunInfo, pair_counts, render_page
 from filinglens.config import get_settings
 from filinglens.db.session import make_engine, session_factory
@@ -57,7 +56,7 @@ def compare(
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(2) from exc
 
-    views: list[PairView] = []
+    views: list[PairView | Gap] = []
     engine = make_engine()
     try:
         with session_factory(engine)() as session:
@@ -66,7 +65,15 @@ def compare(
             for ref in refs:
                 by_cik.setdefault(ref.cik, []).append(ref)
             for filings in by_cik.values():
-                for old, new in itertools.pairwise(filings):
+                for planned in plan_pairs(filings):
+                    if isinstance(planned, Gap):
+                        views.append(planned)
+                        typer.echo(
+                            f"No comparison: {planned.old.company} FY{planned.old.fiscal_year} "
+                            f"-> FY{planned.new.fiscal_year} ({planned.reason})"
+                        )
+                        continue
+                    old, new = planned
                     old_paras = item_paragraphs(session, old.filing_id, item)
                     new_paras = item_paragraphs(session, new.filing_id, item)
                     label = f"{old.company} FY{old.fiscal_year} -> FY{new.fiscal_year}"
@@ -77,15 +84,15 @@ def compare(
                     views.append(PairView(old, new, ops))
                     c = pair_counts(ops)
                     typer.echo(
-                        f"{label}: equal {c.equal} | added {c.added} | removed {c.removed} | "
-                        f"replaced groups {c.replaced_groups} "
-                        f"(old {c.replaced_old} / new {c.replaced_new} paragraphs)"
+                        f"{label}: unchanged {c.equal} | standalone additions {c.added} | "
+                        f"standalone removals {c.removed} | changed groups {c.replaced_groups} "
+                        f"(earlier {c.replaced_old} / later {c.replaced_new} paragraphs)"
                     )
     finally:
         engine.dispose()
 
     if not views:
-        typer.echo("error: no pair could be built", err=True)
+        typer.echo("error: no pair and no gap could be built", err=True)
         raise typer.Exit(1)
 
     companies = {v.new.company for v in views}
