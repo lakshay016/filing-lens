@@ -4,10 +4,11 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R2 preparation. The comparison is frozen at tag `r2-freeze` (strict key,
-  PR #15). Next: the Apple Item 1A completeness check (source-only), then the author's
-  independent must-see reference list and the timed reader sessions. The second pair
-  waits for the author to name a company from a reader's coverage.
+- **Current task:** R2 sessions, author-led. The comparison is frozen at tag `r2-freeze`.
+  Apple FY2022→2023 Item 1A passed the source-only completeness check. Waiting on the
+  author: (1) a second pair from a reader's coverage (run `scripts/check_extraction.py` on
+  it before sessions), (2) the independent must-see reference list, frozen before anyone
+  sees a comparison, (3) the timed sessions.
 - **Next design review:** after R2 reader sessions, bring per-reader times, source-linked must-see changes found and missed, and distracting alerts for both workflows. Escalate earlier if the corrections change the substantive output on the XOM example.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
@@ -45,6 +46,11 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-18 — Apple extraction check passed
+- `scripts/check_extraction.py` added (one filing at a time; never compares years). Apple
+  FY2022: 107/107 paragraphs in order, 99.24% coverage. FY2023: 100/100, 99.27%; one
+  48-character footer + sub-heading stretch, classified. 0 unexplained. Re-run by the lead.
 
 ### 2026-11-18 — pre-R2 corrections merged and frozen
 - PR #15 merged: sign/unit-preserving key, §6.1 gaps, standalone counts and neutral
