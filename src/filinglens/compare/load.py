@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import itertools
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 
@@ -25,6 +27,7 @@ class FilingRef:
     filed_date: date
     accepted_at: datetime | None
     url: str
+    form: str = "10-K"
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,10 +85,49 @@ def filings_for(
                 filed_date=filing.filed_date,
                 accepted_at=filing.accepted_at,
                 url=document_url(filing.cik, filing.accession, filing.primary_document),
+                form=filing.form,
             )
         )
     refs.sort(key=lambda r: (r.cik, r.period_of_report, r.accession))
     return refs
+
+
+ORIGINAL_FORMS = frozenset({"10-K", "10-K405"})
+MIN_PERIOD_DAYS = 270  # SPEC 6.1: 9 to 15 months between periods of report
+MAX_PERIOD_DAYS = 460
+
+
+@dataclass(frozen=True, slots=True)
+class Gap:
+    """Two consecutive filings that SPEC 6.1 does not allow to be compared."""
+
+    old: FilingRef
+    new: FilingRef
+    reason: str
+
+
+def plan_pairs(filings: Sequence[FilingRef]) -> list[tuple[FilingRef, FilingRef] | Gap]:
+    """Consecutive filings as comparable pairs, or a Gap with the reason (SPEC 6.1).
+
+    ``filings`` are sorted by period of report. A pair needs the same CIK, original 10-K
+    forms on both sides and periods 270 to 460 days apart.
+    """
+    out: list[tuple[FilingRef, FilingRef] | Gap] = []
+    for old, new in itertools.pairwise(filings):
+        days = (new.period_of_report - old.period_of_report).days
+        if old.cik != new.cik:
+            out.append(Gap(old, new, f"different companies (CIK {old.cik} and {new.cik})"))
+        elif old.form not in ORIGINAL_FORMS or new.form not in ORIGINAL_FORMS:
+            out.append(Gap(old, new, f"not both original 10-Ks (forms {old.form} and {new.form})"))
+        elif days > MAX_PERIOD_DAYS:
+            missing = [f"FY{y}" for y in range(old.fiscal_year + 1, new.fiscal_year)]
+            tail = f"; {', '.join(missing)} filing missing" if missing else ""
+            out.append(Gap(old, new, f"period gap {days} days{tail}"))
+        elif days < MIN_PERIOD_DAYS:
+            out.append(Gap(old, new, f"period gap {days} days; periods too close together"))
+        else:
+            out.append((old, new))
+    return out
 
 
 def _acceptance_key(filing: Filing) -> tuple[bool, float, str]:
