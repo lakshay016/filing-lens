@@ -97,14 +97,97 @@ of the script left a stretch in FY2023 marked unexplained because of a bug in th
 footer-pattern builder (the digit placeholder was escaped twice); it was fixed in the
 committed script before the results above were taken.
 
-## Second pair: chosen by the author from the reader's coverage
+## Pair 2 selected for the technical pilot: Microsoft, FY2022 → FY2023
 
-Placeholder. To add it:
+The lead selected Microsoft with the author's approval to choose without a recruited reader. It shares Apple's fiscal-year labels and provides a second technology issuer and filing layout. Both companies are development examples. Universe: `config/universes/r2_msft.toml`, CIK 789019. Ingestion fetched two originals and fetched zero on repeat. Both received parse status `ok`.
 
-1. The author names the company (the one the reader's coverage selects).
-2. Add its CIK to `ciks` in `config/universes/r2_dev.toml`, keeping 320193; widen
-   `fiscal_year_min` / `fiscal_year_max` if the pair needs other years.
-3. Run `fl ingest` twice (the second must fetch 0), `fl parse`, `fl parse --report`, then
-   `fl compare --universe config/universes/r2_dev.toml --item 1A --out data/r2/<name>-1a.html`.
-4. Record accessions, periods, filing dates, URLs, parse and Item 1A status, the source
-   checks and the counts here, in the same form as the Apple pair.
+| Fiscal year | Original filing | True body heading block | Selected block | Source-only check |
+|---|---|---:|---:|---|
+| 2022 | [SEC original](https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm) | 350 | 405 | FAIL, selected occurrence 8 of 15 |
+| 2023 | [SEC original](https://www.sec.gov/Archives/edgar/data/789019/000095017023035122/msft-20230630.htm) | 343 | 418 | FAIL, selected occurrence 11 of 15 |
+
+In both filings the body starts at the full heading “ITEM 1A. RISK FACTORS”. Segmentation chose a later repeated “Item 1A” page heading. The interior reconciliation matched all stored paragraphs against the truncated section, illustrating why the heading and interior checks must both pass. Reproduce with `uv run python scripts/check_extraction.py --accession ACC --item 1A` for `0001564590-22-026876` and `0000950170-23-035122`.
+
+**Decision:** Hold the Microsoft comparison page. The next engineering ticket is to fix repeated page headings during Item segmentation, cover this pattern with a regression test and rerun the source-only checks for Microsoft and Apple. Track parser provenance and regenerate affected data before building the Microsoft page. Keep the frozen comparison rules. Human references and timed sessions remain pending recruitment.
+
+## Repeated-header fix (parser v4)
+
+Written 2026-11-17 by the implementing agent (brief `docs/briefs/R2-repeated-item-headers.md`).
+
+**Cause.** Microsoft prints a bare `Item 1A` page header at the top of every Risk Factors
+page (14 in each filing, besides the full heading), and likewise `Item 1`, `Item 7`,
+`Item 8` and `Item 15`. Each is a heading block and an Item candidate. The gain of the true
+heading ran only to the next page header, so the dynamic programme chose the page whose
+chunk was largest. Task 1.3 never drops Item-pattern lines as page furniture.
+
+**Rule** (`parse/items.py`, commit `a89126f`). A candidate's text is normalised (NFKC,
+lower case, every run of non-letters/digits to one space). A candidate whose normalised
+text occurs 3 or more times among the document's candidates is a running header and is
+removed before gains are computed. If that leaves an Item code with no candidate, one
+removed occurrence for that code is restored: the first one followed by at least 2,000
+characters before the next remaining candidate, or the very first if none is. This
+2,000-character condition is the implementing agent's addition to the brief (see
+"Decision" below). Notes: `running_headers` (text → count) and `fallback_headings`.
+The removed blocks are `Segmentation.skip_blocks`. `build_paragraphs` skips them: they
+are neither paragraphs nor in any heading path. `PARSER_VERSION = "4"`.
+
+**Decision not in the brief.** Applied exactly as written, the rule broke the existing
+1.4 test 3. In that test the text "Item 1A. Risk Factors" occurs three times (contents
+line, body heading, stray cross-reference), so all three are running headers. The
+fallback then restored the contents line and Item 1A came out `short`. The fallback now
+passes over occurrences with less than 2,000 characters (`ITEM_MIN_CHARS`) before the next
+remaining candidate, which is the same reasoning the gain rule uses against contents
+entries. A new unit test covers this case. Test 3 is unchanged and passes.
+
+**Strengthened check** (`scripts/check_extraction.py`, commit `a21d865`). The raw section is
+now cut without the parser. Among lines starting with `item\s*1a\b` it is the earliest
+followed by 2,000 or more characters before the next line starting with `item\s*1b\b`,
+and it ends at that line. Text between that start and the first stored paragraph is
+uncovered. Stretches made of a repeated Item pattern are classified "repeated Item
+header". A unit test shows that a parser section starting at a later page header now
+fails the interior check. Under the previous script that test's interior check passed.
+
+Commands, from the main checkout, worktree as `--project`: `fl parse --force` for
+`r2_dev`, `r2_msft` and `demo`, then `scripts/check_extraction.py --accession ACC --item 1A`.
+
+| | Apple FY2022 | Apple FY2023 | Microsoft FY2022 | Microsoft FY2023 |
+|---|---|---|---|---|
+| Accession | 0000320193-22-000108 | 0000320193-23-000106 | 0001564590-22-026876 | 0000950170-23-035122 |
+| Heading chosen | block 125 of 745 | block 126 of 730 | block 350 of 1420 | block 343 of 1366 |
+| Heading check | PASS | PASS | PASS | PASS |
+| Raw start | Item 1A line 2 of 2 | Item 1A line 2 of 2 | Item 1A line 2 of 16 | Item 1A line 2 of 16 |
+| Paragraphs found in order | 107 / 107 | 100 / 100 | 92 / 92 | 82 / 82 |
+| Coverage | 99.24% (70,238 / 70,775) | 99.27% (67,374 / 67,872) | 99.37% (69,704 / 70,144) | 99.37% (68,087 / 68,517) |
+| Gaps of 40 chars or fewer | 14 (407 chars) | 11 (328 chars) | 15 (251 chars) | 15 (251 chars) |
+| Stretches over 40 chars | none | 1: 48 chars, running header/footer, heading | 1: 66 chars, heading | 1: 66 chars, heading |
+| Unexplained | 0 | 0 | 0 | 0 |
+| Result | PASS (exit 0) | PASS (exit 0) | PASS (exit 0) | PASS (exit 0) |
+
+For Microsoft, raw line occurrence 2 is the bare `Item 1A` page header at the top of the
+first Risk Factors page (block 349, directly before the full heading at block 350).
+The full heading then falls in a gap of 40 characters or fewer. The 66-character stretch
+in each Microsoft filing is a sub-heading line that no stored paragraph carries in its
+heading path.
+
+Item 1A section sizes from `parse_notes` (the comparison between years was not looked at):
+
+| Filing | Before (v3): chars / blocks / paragraphs | After (v4): chars / blocks / paragraphs | `running_headers` (v4) |
+|---|---|---|---|
+| Apple FY2022 | 70,245 / 118 / 107 | 70,245 / 118 / 107 | none |
+| Apple FY2023 | 67,381 / 112 / 100 | 67,381 / 112 / 100 | none |
+| Microsoft FY2022 | 41,678 / 67 / 54 | 69,870 / 122 / 92 | item 1: 20, item 1a: 14, item 7: 16, item 8: 42, item 15: 6 |
+| Microsoft FY2023 | 23,738 / 37 / 30 | 68,253 / 112 / 82 | item 1: 20, item 1a: 14, item 7: 17, item 8: 41, item 15: 6 |
+
+`fallback_headings` is empty for all four, and for the three Exxon filings, which have no
+running headers.
+
+**Exxon.** After re-parsing, the per-pair counts are unchanged: FY2021 → FY2022 unchanged 16,
+changed groups 8 (24 / 22), FY2022 → FY2023 unchanged 14, changed groups 11 (24 / 25),
+no standalone additions or removals. This matches the run before re-parsing. All 2,344
+stored Exxon paragraphs are also identical in item, seq, exact hash and heading path.
+
+**Fixture snapshots** (`tests/snapshots/items_*.json`, `paragraphs_*.json`): unchanged.
+
+**Pages** (frozen comparison code; Apple and Microsoft stdout discarded, content not read):
+`data/r2/msft-1a.html` 159,899 bytes, `data/r2/apple-1a.html` 164,646 bytes,
+`data/demo/index.html` 145,672 bytes. `grep -c "<script"` prints 0 for each.

@@ -151,3 +151,68 @@ def test_contents_entry_chosen_as_heading_fails() -> None:
     )
     fake = replace(section, heading_index=toc_index, start=toc_index + 1, chars=30)
     assert not ce.check_heading(blocks, fake, "1A").passed
+
+
+def _paged_filing() -> bytes:
+    """Microsoft shape: a bare "Item 1A" page header after every second risk paragraph."""
+    body: list[str] = []
+    for i, topic in enumerate(TOPICS):
+        if i and i % 2 == 0:
+            body.append("<p><b>Item 1A</b></p>")
+        body.append(f"<p>{_para(i, topic)}</p>")
+    html = (
+        "<html><body>"
+        "<table><tr><td>Item 1.</td><td>Business</td></tr>"
+        "<tr><td>Item 1A.</td><td>Risk Factors 5</td></tr>"
+        "<tr><td>Item 1B.</td><td>Unresolved Staff Comments 9</td></tr></table>"
+        "<p><b>ITEM 1. BUSINESS</b></p>"
+        + "".join(f"<p>{_para(50 + i, 'the business section')}</p>" for i in range(8))
+        + "<p><b>ITEM 1A. RISK FACTORS</b></p>"
+        + "".join(body)
+        + "<p><b>ITEM 1B. UNRESOLVED STAFF COMMENTS</b></p><p>None.</p>"
+        "<p><b>ITEM 2. PROPERTIES</b></p><p>Headquarters.</p></body></html>"
+    )
+    return html.encode()
+
+
+def test_raw_bounds_start_at_the_body_heading_not_the_contents() -> None:
+    raw = ce.raw_text(_paged_filing())
+    bounds = ce.raw_bounds(raw, "1A")
+    assert not isinstance(bounds, str), bounds
+    start, end, _, note, _ = bounds
+    assert raw.text[start:].startswith("ITEM 1A. RISK FACTORS")
+    assert raw.text[end:].startswith("ITEM 1B. UNRESOLVED STAFF COMMENTS")
+    assert "occurrence 2 of 6" in note  # contents row, body heading, 4 page headers
+
+
+def test_repeated_item_headers_are_classified() -> None:
+    doc = _paged_filing()
+    blocks = extract_blocks(doc)
+    seg = segment(blocks, None)
+    section = next(s for s in seg.sections if s.item == "1A")
+    assert blocks[section.heading_index or 0].text == "ITEM 1A. RISK FACTORS"
+    rec = ce.reconcile(ce.raw_text(doc), blocks, seg.sections, section, _stored(doc), 0)
+    assert rec.found == rec.total == len(TOPICS)
+    assert len(rec.stretches) == 4
+    assert all(s.classification == "repeated Item header" for s in rec.stretches)
+    assert rec.passed
+    assert ce.analyse(doc, _stored(doc), "1A").passed
+
+
+def test_late_start_at_a_page_header_fails_the_interior_check() -> None:
+    # Parser output as before the fix: the section starts at a later "Item 1A" page
+    # header, so the paragraphs before it are missing from the stored Item.
+    doc = _paged_filing()
+    blocks = extract_blocks(doc)
+    seg = segment(blocks, None)
+    section = next(s for s in seg.sections if s.item == "1A")
+    page_headers = [i for i, b in enumerate(blocks) if b.text == "Item 1A"]
+    late = page_headers[2]
+    fake = replace(section, heading_index=late, start=late + 1)
+    stored = [p for p in _stored(doc) if int(p.text.split()[2]) >= 6]  # risks 6..9 only
+    assert len(stored) == 4
+    rec = ce.reconcile(ce.raw_text(doc), blocks, seg.sections, fake, stored)
+    assert rec.not_found == []
+    assert len(rec.unexplained) == 1
+    assert rec.unexplained[0].first_words.startswith("Risk number 0 concerns")
+    assert not rec.passed

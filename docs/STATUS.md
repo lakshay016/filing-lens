@@ -4,11 +4,11 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R2 sessions, author-led. The comparison is frozen at tag `r2-freeze`.
-  Apple FY2022→2023 Item 1A passed the source-only completeness check. Waiting on the
-  author: (1) a second pair from a reader's coverage (run `scripts/check_extraction.py` on
-  it before sessions), (2) the independent must-see reference list, frozen before anyone
-  sees a comparison, (3) the timed sessions.
+- **Current task:** R2. Both development pairs (Apple, Microsoft FY2022→2023) pass the
+  source-only extraction check under parser v4. Pages `data/r2/apple-1a.html` and
+  `data/r2/msft-1a.html` are generated with the frozen comparison (`r2-freeze`) and remain
+  unopened. Next: the agent-run technical pilot, or the independent reference list and
+  human sessions once readers are recruited. Human reading time and usefulness are unmeasured.
 - **Next design review:** after R2 reader sessions, bring per-reader times, source-linked must-see changes found and missed, and distracting alerts for both workflows. Escalate earlier if the corrections change the substantive output on the XOM example.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
@@ -46,6 +46,14 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 The first human study is R2. Arrange independent readers, collect must-see references and observe timed tasks. Later, select the broader evaluation companies and supply blind gold alignments. Classifier labels are conditional on the ranking review.
 
 ## Log
+
+### 2026-11-18 — parser v4: repeated Item page headers
+- Microsoft's bare "Item 1A" page header (14 per filing) made segmentation start Item 1A
+  late while reporting `ok`. Fixed in `items.py` (running headers removed before gains,
+  skipped as paragraphs); regression tests fail on the old code. Check script now finds the
+  section start independently. All four R2 filings pass (lead re-ran): Apple 107/107,
+  100/100; Microsoft 92/92, 82/82; 99.2–99.4% coverage; 0 unexplained. Microsoft Item 1A:
+  41,678 → 69,870 and 23,738 → 68,253 chars. Apple, XOM and the fixtures are unchanged.
 
 ### 2026-11-18 — Apple extraction check passed
 - `scripts/check_extraction.py` added (one filing at a time; never compares years). Apple

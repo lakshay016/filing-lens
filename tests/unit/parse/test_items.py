@@ -262,3 +262,115 @@ def test_tie_prefers_later_block() -> None:
 def test_item_status_missing() -> None:
     assert item_status({"items": {}}, "7") == "missing"
     assert item_status({}, "7") == "missing"
+
+
+# ---------------------------------------------------------------- running Item headers
+
+
+def _paged(full_title: str | None, bare: str, chunks: list[int]) -> list[Spec]:
+    """A section: optional full-title heading, then text chunks separated by page headers."""
+    out: list[Spec] = [("h", full_title)] if full_title else []
+    for k, size in enumerate(chunks):
+        if k > 0 or full_title is None:
+            out.append(("h", bare))
+        out.append(("t", size))
+    return out
+
+
+ITEM_1_CHUNKS = [2_000] * 6 + [8_000]  # 20,000 chars, 6 page headers, the last page largest
+ITEM_1A_CHUNKS = [3_000] * 8 + [10_000] + [3_000] * 2  # 40,000 chars, 10 page headers
+
+
+def microsoft_shape() -> list[Block]:
+    return doc(
+        ("s", "Cover page"),
+        ("t", 3_000),
+        *_paged("ITEM 1. BUSINESS", "Item 1", ITEM_1_CHUNKS),
+        *_paged("ITEM 1A. RISK FACTORS", "Item 1A", ITEM_1A_CHUNKS),
+        ("h", "Item 1B, 2, 3, 4"),
+        ("h", "ITEM 1B. UNRESOLVED STAFF COMMENTS"),
+        ("t", 50),
+        ("h", "ITEM 2. PROPERTIES"),
+        ("t", 1_000),
+        ("h", "ITEM 7. MANAGEMENT'S DISCUSSION AND ANALYSIS"),
+        ("t", 25_000),
+        ("h", "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA"),
+        ("t", 50_000),
+    )
+
+
+def test_running_item_headers_do_not_steal_the_section() -> None:
+    blocks = microsoft_shape()
+    seg = segment(blocks, date(2023, 6, 30))
+    assert seg.status == "ok"
+    by_item = {s.item: s for s in seg.sections if s.heading_index is not None}
+    assert blocks[by_item["1"].heading_index or 0].text == "ITEM 1. BUSINESS"
+    assert blocks[by_item["1A"].heading_index or 0].text == "ITEM 1A. RISK FACTORS"
+    assert 20_000 <= by_item["1"].chars <= 20_000 + 6 * len("Item 1")
+    # all pages, plus the page-header texts and the unchosen "Item 1B, 2, 3, 4" header
+    assert 40_000 <= by_item["1A"].chars <= 40_000 + 10 * len("Item 1A") + 16
+    assert seg.notes["running_headers"] == {"item 1": 6, "item 1a": 10}
+    assert seg.notes["fallback_headings"] == []
+    skipped = {i for i, b in enumerate(blocks) if b.text in ("Item 1", "Item 1A")}
+    assert len(skipped) == 16
+    assert seg.skip_blocks == frozenset(skipped)
+    candidates = find_candidates(blocks)
+    assert not any(c.block_index in skipped for c in candidates)
+    full_1a = by_item["1A"].heading_index
+    # the gain of the true heading runs over every page, up to the "Item 1B, 2, 3, 4" header
+    gain_1a = next(c for c in candidates if c.block_index == full_1a).gain
+    assert gain_1a == 40_000 + 10 * len("Item 1A")
+
+
+def test_only_bare_running_headers_fall_back_to_the_first() -> None:
+    blocks = doc(
+        ("s", "Cover page"),
+        ("t", 3_000),
+        heading("1"),
+        ("t", 20_000),
+        *_paged(None, "Item 1A", [5_000, 5_000, 5_000, 5_000]),
+        heading("1B"),
+        ("t", 50),
+        heading("7"),
+        ("t", 25_000),
+        heading("8"),
+        ("t", 50_000),
+    )
+    seg = segment(blocks, date(2023, 6, 30))
+    assert seg.status == "ok"
+    bare = [i for i, b in enumerate(blocks) if b.text == "Item 1A"]
+    assert len(bare) == 4
+    sec = next(s for s in seg.sections if s.item == "1A")
+    assert sec.heading_index == bare[0]
+    assert 20_000 <= sec.chars <= 20_000 + 3 * len("Item 1A")
+    assert seg.notes["running_headers"] == {"item 1a": 4}
+    assert seg.notes["fallback_headings"] == ["1A"]
+    assert seg.skip_blocks == frozenset(bare[1:])
+
+
+def test_fallback_passes_over_a_contents_line() -> None:
+    # Contents line, body heading and a stray cross-reference share one text (3 times):
+    # all are running headers; the fallback must restore the body heading, not the
+    # contents line, which has almost no text before the next candidate.
+    specs = [*toc(ALL)]
+    for code in ALL:
+        specs += [heading(code), ("t", SIZES.get(code, 3_000))]
+        if code == "7":
+            specs += [("s", "Item 1A. Risk Factors"), ("t", 1_000)]
+    blocks = doc(*specs)
+    seg = segment(blocks, date(2023, 12, 31))
+    assert seg.notes["running_headers"] == {"item 1a risk factors": 3}
+    assert seg.notes["fallback_headings"] == ["1A"]
+    sec1a = next(s for s in seg.sections if s.item == "1A")
+    assert blocks[sec1a.heading_index or 0].kind == "heading"
+    assert sec1a.heading_index == len(ALL) + 2  # body: after the contents, Item 1 and text
+    assert seg.status == "ok"
+
+
+def test_heading_text_occurring_twice_is_not_a_running_header() -> None:
+    blocks = toc_doc()  # each heading text occurs twice: contents line and body heading
+    seg = segment(blocks, date(2023, 12, 31))
+    assert seg.notes["running_headers"] == {}
+    assert seg.notes["fallback_headings"] == []
+    assert seg.skip_blocks == frozenset()
+    assert seg.notes["n_candidates"] == 2 * len(ALL)

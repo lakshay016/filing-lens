@@ -8,10 +8,15 @@ filings. It reads the stored raw file and the stored paragraphs, and reports
 1. the body heading of the Item (and every other mention of it), with a pass/fail that
    the chosen heading is the body one rather than a table-of-contents entry;
 2. an interior reconciliation: the Item's text is rebuilt from the raw HTML without the
-   project's block extractor (lxml text in order, hidden content dropped), every stored
+   project's block extractor (lxml text in order, hidden content dropped) and cut
+   without the parser: from the earliest line starting with the Item pattern
+   (``item 1a``) that is followed by at least 2,000 characters before the next line
+   starting with the next Item's pattern (``item 1b``), to that line. Every stored
    paragraph is located in it in order, and every uncovered stretch longer than 40
    characters is listed and classified (heading, page number, running header/footer,
-   table-of-contents link text) or called "unexplained".
+   repeated Item header, table-of-contents link text) or called "unexplained". Text
+   between the raw start and the first stored paragraph is uncovered, so a parser
+   section that starts late fails here as well as in the heading check.
 
 Exit code 0 when the heading check passes, every paragraph is found in order and nothing
 is unexplained; 1 otherwise. Reads settings through ``filinglens.config`` (nothing is
@@ -37,11 +42,18 @@ from filinglens.db.models import Filing, Paragraph
 from filinglens.db.session import session_scope
 from filinglens.edgar.store import raw_path, read_raw
 from filinglens.parse.html import Block, extract_blocks
-from filinglens.parse.items import ITEM_MIN_CHARS, Section, find_candidates, segment
+from filinglens.parse.items import (
+    ITEM_MIN_CHARS,
+    ITEM_ORDER,
+    Section,
+    find_candidates,
+    segment,
+)
 
 MIN_STRETCH = 40
 TOC_ROW_MAX_GAIN = 1000  # "little text between contents entries"
 FURNITURE_MIN_REPEATS = 3
+RAW_SECTION_MIN_CHARS = 2000  # a real section, not a contents entry
 
 _BLOCK_TAGS = frozenset(
     {"p", "div", "li", "h1", "h2", "h3", "h4", "h5", "h6", "td", "th", "tr", "blockquote"}
@@ -331,7 +343,55 @@ def _furniture(lines: Sequence[str]) -> list[re.Pattern[str]]:
     return patterns
 
 
-def _classify(gap: str, furniture: Sequence[re.Pattern[str]], headings: Sequence[str]) -> str:
+def _item_re(code: str) -> re.Pattern[str]:
+    """The Item heading pattern for one code, e.g. ``item\\s*1a\\b``, case-insensitive."""
+    return re.compile(rf"item\s*{re.escape(code)}\b", re.IGNORECASE)
+
+
+def raw_bounds(raw: RawText, item: str) -> tuple[int, int, int, str, str] | str:
+    """Start, end, heading-line length and notes of the Item in the raw text, or an error.
+
+    Independent of the parser: among lines starting with the Item pattern, the section
+    starts at the earliest one followed by at least ``RAW_SECTION_MIN_CHARS`` characters
+    before the next line starting with the next Item's pattern, and ends there.
+    Contents entries are close together and do not qualify; repeated page headers inside
+    the section come later than the start.
+    """
+    code = item.upper()
+    if code not in ITEM_ORDER or code == ITEM_ORDER[-1]:
+        return f"no next Item after {item!r} to end the section"
+    nxt = ITEM_ORDER[ITEM_ORDER.index(code) + 1]
+    line_len: dict[int, int] = {}
+    offset = 0
+    for line in raw.lines:
+        line_len[offset] = len(line)
+        offset += len(line) + 1
+
+    def line_starts(pattern: re.Pattern[str]) -> list[int]:
+        return [m.start() for m in pattern.finditer(raw.text) if m.start() in raw.line_starts]
+
+    starts, ends = line_starts(_item_re(code)), line_starts(_item_re(nxt))
+    if not starts:
+        return f"no line starting with Item {code} in the raw text"
+    for n, a in enumerate(starts):
+        b = next((e for e in ends if e > a), None)
+        if b is None:
+            return f"no line starting with Item {nxt} after Item {code} occurrence {n + 1}"
+        if b - a >= RAW_SECTION_MIN_CHARS:
+            note = (
+                f"Item {code} line occurrence {n + 1} of {len(starts)}, the first followed "
+                f"by {RAW_SECTION_MIN_CHARS}+ characters before Item {nxt}"
+            )
+            return a, b, line_len.get(a, 0), note, f"first Item {nxt} line after it"
+    return f"no Item {code} line is followed by {RAW_SECTION_MIN_CHARS}+ characters"
+
+
+def _classify(
+    gap: str,
+    furniture: Sequence[re.Pattern[str]],
+    headings: Sequence[str],
+    item_pattern: re.Pattern[str] | None = None,
+) -> str:
     residual = gap
     seen: list[str] = []
 
@@ -344,6 +404,8 @@ def _classify(gap: str, furniture: Sequence[re.Pattern[str]], headings: Sequence
                 seen.append(label)
 
     strip("table-of-contents link text", _TOC_RE)
+    if item_pattern is not None:
+        strip("repeated Item header", item_pattern)
     for pattern in furniture:
         strip("running header/footer", pattern)
     for heading in sorted(headings, key=len, reverse=True):
@@ -363,39 +425,25 @@ def reconcile(
     stored: Sequence[StoredParagraph],
     min_stretch: int = MIN_STRETCH,
 ) -> Reconciliation:
+    """Locate the stored paragraphs in the raw Item text cut by ``raw_bounds``.
+
+    ``sections`` is unused: the raw start and end no longer depend on the parser. The
+    parser's ``section`` gives only the Item code and the sub-heading texts in it.
+    """
+    del sections
     rec = Reconciliation(total=len(stored))
-    assert section.heading_index is not None
-    heading = norm(blocks[section.heading_index].text)
-    occurrences = _line_start_occurrences(raw, heading)
-    if not occurrences:
-        rec.error = f"heading {heading!r} not found in the raw text"
+    bounds = raw_bounds(raw, section.item)
+    if isinstance(bounds, str):
+        rec.error = bounds
         return rec
-    # The body heading is the last occurrence before the first stored paragraph's text.
-    n = len(occurrences) - 1
-    if stored:
-        probe = norm(min(stored, key=lambda x: x.seq).text)[:60]
-        at = raw.text.find(probe, occurrences[0])
-        if at != -1:
-            n = max((k for k, o in enumerate(occurrences) if o < at), default=0)
-    start = occurrences[n]
-    rec.start_note = f"heading occurrence {n + 1} of {len(occurrences)} in the raw text"
-    later = [s for s in sections if s.heading_index is not None and s.start >= section.end]
-    end = len(raw.text)
-    rec.end_note = "end of document"
-    if later:
-        nxt = norm(blocks[later[0].heading_index or 0].text)
-        after = [o for o in _line_start_occurrences(raw, nxt, start + len(heading)) if o > start]
-        if after:
-            end = after[0]
-            rec.end_note = f"next heading {nxt!r}"
-        else:
-            rec.error = f"next heading {nxt!r} not found after the Item heading"
-            return rec
+    start, end, heading_len, rec.start_note, rec.end_note = bounds
     s = raw.text[start:end].rstrip()
     rec.section_chars = len(s)
 
-    intervals: list[tuple[int, int]] = [(0, len(heading))]
-    cursor = len(heading)
+    # Everything from the raw heading line on must be covered by stored paragraphs (or be
+    # classified), so a parser section that starts late leaves an uncovered stretch.
+    intervals: list[tuple[int, int]] = [(0, heading_len)]
+    cursor = heading_len
     prev_path: tuple[str, ...] = ()
     for p in sorted(stored, key=lambda x: x.seq):
         text = norm(p.text)
@@ -442,8 +490,11 @@ def reconcile(
             rec.short_gap_chars += len(gap)
             continue
         rec.stretches.append(
-            Stretch(a, len(gap), words(gap), _classify(gap, furniture, heading_texts))
-        )
+            Stretch(
+                a, len(gap), words(gap),
+                _classify(gap, furniture, heading_texts, _item_re(section.item)),
+            )
+        )  # fmt: skip
     return rec
 
 
