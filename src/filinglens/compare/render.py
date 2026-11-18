@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from filinglens.compare.diff import Op, word_diff
-from filinglens.compare.load import FilingRef, Para
+from filinglens.compare.load import FilingRef, Gap, Para
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,9 +34,9 @@ class PairCounts:
     equal: int  # paragraphs
     added: int  # paragraphs
     removed: int  # paragraphs
-    replaced_groups: int
-    replaced_old: int  # paragraphs on the old side of all replaced groups
-    replaced_new: int
+    replaced_groups: int  # changed groups
+    replaced_old: int  # earlier-filing paragraphs in all changed groups
+    replaced_new: int  # later-filing paragraphs in all changed groups
 
 
 def pair_counts(ops: Sequence[Op]) -> PairCounts:
@@ -76,6 +76,11 @@ ins{background:var(--add);color:inherit;text-decoration:underline}
 del{background:var(--del);color:inherit}
 details{margin:.6rem 0}summary{cursor:pointer;font:14px system-ui,sans-serif;color:var(--muted)}
 pre{white-space:pre-wrap;font:13px/1.4 ui-monospace,monospace;margin:.2rem 0}
+.para.neutral{background:var(--rep)}
+.group h4{font:600 13px system-ui,sans-serif;margin:.6rem 0 .1rem}
+.gap{border:2px dashed var(--line);margin:1rem 0;padding:.6rem .9rem;
+font:14px system-ui,sans-serif;background:var(--rep)}
+.note{font:13px system-ui,sans-serif;color:var(--muted);margin:.2rem 0 1rem}
 .where{margin-top:.2rem}
 @media (max-width:600px){body{font-size:15px}}
 """
@@ -161,14 +166,27 @@ def _word_diff_html(old: Para, new: Para) -> str:
 
 
 def _replaced_html(op: Op, headings: _Headings, item_label: str) -> str:
+    if len(op.old) == 1 and len(op.new) == 1:
+        label = "Changed: 1 earlier / 1 later paragraph, with a word-level difference."
+        olds = _para_html(op.old[0], "old", "removed", headings, item_label)
+        news = _para_html(op.new[0], "new", "added", headings, item_label)
+        extra = _word_diff_html(op.old[0], op.new[0])
+        return f'<div class="group"><div class="label">{_e(label)}</div>{olds}{news}{extra}</div>'
     label = (
-        f"Replaced: {len(op.old)} old → {len(op.new)} new. The page does not claim which "
-        "old paragraph became which new one."
+        f"Changed group: {len(op.old)} earlier / {len(op.new)} later paragraphs; "
+        "not matched paragraph by paragraph"
     )
-    olds = "".join(_para_html(p, "old", "removed", headings, item_label) for p in op.old)
-    news = "".join(_para_html(p, "new", "added", headings, item_label) for p in op.new)
-    extra = _word_diff_html(op.old[0], op.new[0]) if len(op.old) == 1 and len(op.new) == 1 else ""
-    return f'<div class="group"><div class="label">{_e(label)}</div>{olds}{news}{extra}</div>'
+    olds = "".join(_para_html(p, "old", "neutral", headings, item_label) for p in op.old)
+    news = "".join(_para_html(p, "new", "neutral", headings, item_label) for p in op.new)
+    return (
+        f'<div class="group"><div class="label">{_e(label)}</div>'
+        f"<h4>Earlier filing</h4>{olds}<h4>Later filing</h4>{news}</div>"
+    )
+
+
+def _gap_html(gap: Gap) -> str:
+    text = f"No comparison: FY{gap.old.fiscal_year} \u2192 FY{gap.new.fiscal_year} ({gap.reason})."
+    return f'<div class="gap">{_e(text)}</div>'
 
 
 def _filing_line(ref: FilingRef, side: str) -> str:
@@ -191,12 +209,14 @@ def _pair_html(pair: PairView, item_label: str) -> str:
         _filing_line(pair.old, "old"),
         _filing_line(pair.new, "new"),
         "</table>",
-        '<table class="counts"><tr><th>Unchanged</th><th>Added</th><th>Removed</th>'
-        "<th>Replaced groups</th></tr>"
+        '<table class="counts"><tr><th>Unchanged</th><th>Standalone additions</th>'
+        "<th>Standalone removals</th>"
+        "<th>Changed groups (earlier / later paragraphs)</th></tr>"
         f"<tr><td>{counts.equal} paragraphs</td><td>{counts.added} paragraphs</td>"
         f"<td>{counts.removed} paragraphs</td>"
-        f"<td>{counts.replaced_groups} (old {counts.replaced_old} / new {counts.replaced_new} "
-        "paragraphs)</td></tr></table>",
+        f"<td>{counts.replaced_groups} (earlier {counts.replaced_old} / later "
+        f"{counts.replaced_new} paragraphs)</td></tr></table>",
+        '<p class="note">Changed groups can contain new or removed passages; read each group.</p>',
     ]
     headings = _Headings()
     for op in pair.ops:
@@ -215,19 +235,24 @@ _HOW = (
     "<p><b>How to read this page.</b> Each filing's Item is split into paragraphs, numbered "
     "from 1 in filing order (old ¶n and new ¶n are positions within that Item of "
     "that filing). Two paragraphs count as the same when their text is identical after "
-    "lower-casing and removing punctuation; numbers are kept, so an edited number is a "
-    "change. Green paragraphs are new text, red struck-through paragraphs are text that is "
-    "gone. A <em>replaced</em> group lists the old and the new paragraphs of one changed "
-    "stretch together; it does not claim which old paragraph became which new one (a single "
-    "old and single new paragraph also get a word-level difference). Text that moved appears "
-    "twice: removed in one place and added in another. Unchanged runs are folded; open them "
-    "for context. This is a baseline, not a judgment of which changes matter.</p>"
+    "lower-casing, straightening quotes and collapsing spaces; punctuation, signs, "
+    "brackets, currency symbols and numbers are kept, so an edited number or sign is a "
+    "change. Green paragraphs are standalone additions and red struck-through paragraphs "
+    "are standalone removals. A <em>changed group</em> is a stretch where the two filings "
+    "differ: when it holds one earlier and one later paragraph they are shown with a "
+    "word-level difference; otherwise the earlier-filing and later-filing paragraphs are "
+    "listed side by side in plain text, without colours, because the page does not claim "
+    "which earlier paragraph became which later one, and a group can contain new or "
+    "removed passages. Text that moved appears twice: removed in one place and added in "
+    "another. Unchanged runs are folded; open them for context. Where a year is missing "
+    "or the periods are not about a year apart, a notice replaces the comparison. This is "
+    "a baseline, not a judgment of which changes matter.</p>"
 )
 
 
 def render_page(
     company: str,
-    pairs: Sequence[PairView],
+    pairs: Sequence[PairView | Gap],
     generated: RunInfo,
     item_title: str = "Item 1A Risk Factors",
 ) -> str:
@@ -237,7 +262,9 @@ def render_page(
         f"CIK {_e(cik)} · generated {_e(generated.generated.strftime('%Y-%m-%d %H:%M UTC'))} "
         f"· commit {_e(generated.commit)} · <code>{_e(generated.command)}</code>"
     )
-    body = "\n".join(_pair_html(p, item_label) for p in pairs)
+    body = "\n".join(
+        _gap_html(p) if isinstance(p, Gap) else _pair_html(p, item_label) for p in pairs
+    )
     return (
         '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'

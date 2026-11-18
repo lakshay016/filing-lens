@@ -4,7 +4,7 @@ import re
 from datetime import UTC, date, datetime
 
 from filinglens.compare.diff import diff_paragraphs
-from filinglens.compare.load import FilingRef, Para
+from filinglens.compare.load import FilingRef, Gap, Para
 from filinglens.compare.render import PairView, RunInfo, render_page
 
 
@@ -76,3 +76,60 @@ def test_table_is_preformatted() -> None:
     )
     html = render_page("Acme", [pair], RunInfo(datetime(2026, 1, 1, tzinfo=UTC), "x", "y"))
     assert '<pre class="text">a | b</pre>' in html
+
+
+def render_ops(old: list[Para], new: list[Para]) -> str:
+    pair = PairView(
+        ref(2021, "0000000001-22-000001"),
+        ref(2022, "0000000001-23-000002"),
+        diff_paragraphs(old, new),
+    )
+    return render_page("Acme", [pair], RunInfo(datetime(2026, 1, 1, tzinfo=UTC), "x", "y"))
+
+
+def group_html(html: str) -> str:
+    return html.split('<div class="group">')[1].split("</div></div>\n")[0]
+
+
+def test_unresolved_group_is_neutral() -> None:
+    html = render_ops(paras("o1", "o2", "o3"), paras("n1", "n2"))
+    group = group_html(html)
+    assert "Changed group: 3 earlier / 2 later paragraphs; not matched paragraph by paragraph" in (
+        html
+    )
+    assert "Earlier filing" in group and "Later filing" in group
+    assert "line-through" not in group
+    assert not re.search(r'class="[^"]*\b(added|removed)\b', group)
+    assert "word differences" not in group
+    assert all(t in group for t in ("o1", "o2", "o3", "n1", "n2"))
+
+
+def test_one_by_one_group_keeps_word_diff() -> None:
+    html = render_ops(paras("the risk is high"), paras("the risk is low"))
+    assert "word differences" in html
+    assert "<del>high</del>" in html and "<ins>low</ins>" in html
+
+
+def test_counts_headers_and_explanation() -> None:
+    html = page()
+    for header in (
+        "<th>Unchanged</th>",
+        "<th>Standalone additions</th>",
+        "<th>Standalone removals</th>",
+        "<th>Changed groups (earlier / later paragraphs)</th>",
+    ):
+        assert header in html
+    assert "Changed groups can contain new or removed passages; read each group." in html
+
+
+def test_standalone_ops_keep_colours() -> None:
+    html = render_ops(paras("a", "b"), paras("a"))
+    assert 'class="para removed"' in html
+
+
+def test_gap_notice_and_no_comparison_block() -> None:
+    old, new = ref(2021, "0000000001-22-000001"), ref(2023, "0000000001-24-000003")
+    gap = Gap(old, new, "period gap 730 days; FY2022 filing missing")
+    html = render_page("Acme", [gap], RunInfo(datetime(2026, 1, 1, tzinfo=UTC), "x", "y"))
+    assert "No comparison: FY2021 → FY2023 (period gap 730 days; FY2022 filing missing)." in html
+    assert '<div class="group">' not in html and '<table class="counts"' not in html

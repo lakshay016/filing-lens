@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from filinglens.compare.diff import Op, diff_paragraphs, word_diff
+import pytest
+
+from filinglens.compare.diff import Op, compare_key, diff_paragraphs, word_diff
 from filinglens.compare.load import Para
 
 
@@ -56,8 +58,8 @@ def test_two_edited_paragraphs_form_one_group_without_pairing() -> None:
     assert [p.text for p in group.new] == ["new first", "new second"]
 
 
-def test_case_and_punctuation_only_change_is_equal() -> None:
-    ops = diff_paragraphs(paras("Hello, World!"), paras("hello world"))
+def test_case_only_change_is_equal() -> None:
+    ops = diff_paragraphs(paras("Hello, World!"), paras("hello, world!"))
     assert kinds(ops) == ["equal"]
 
 
@@ -77,3 +79,39 @@ def test_word_diff_one_word_change() -> None:
 
 def test_word_diff_identical() -> None:
     assert word_diff("a b", "a b") == [("same", "a b")]
+
+
+@pytest.mark.parametrize(
+    ("a", "b"),
+    [
+        (
+            "Net income increased 5% to $1.2 billion.",
+            "Net income decreased (5%) to $1.2 billion.",
+        ),
+        ("a change of 5%", "a change of -5%"),
+        ("a loss of (3,400)", "a loss of 3,400"),
+        ("$5 million", "\u20ac5 million"),
+        ("less than <10%", "less than >10%"),
+    ],
+)
+def test_compare_key_keeps_meaning(a: str, b: str) -> None:
+    assert compare_key(a) != compare_key(b)
+
+
+@pytest.mark.parametrize(
+    ("a", "b"),
+    [
+        ("Risk   relating to\n China.", "Risk relating to China."),
+        ("It\u2019s \u201cmaterial\u201d.", 'It\'s "material".'),
+        ("RISK FACTORS", "Risk Factors"),
+        ("a\u00a0b", "a b"),
+    ],
+)
+def test_compare_key_folds_form_only(a: str, b: str) -> None:
+    assert compare_key(a) == compare_key(b)
+
+
+def test_sign_change_is_a_one_by_one_replacement() -> None:
+    ops = diff_paragraphs(paras("p", "loss of (3,400)"), paras("p", "loss of 3,400"))
+    assert kinds(ops) == ["equal", "replaced"]
+    assert len(ops[1].old) == 1 and len(ops[1].new) == 1

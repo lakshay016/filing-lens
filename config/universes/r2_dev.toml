@@ -1,0 +1,7 @@
+name = "r2_dev"
+forms = ["10-K"]
+fiscal_year_min = 2022
+fiscal_year_max = 2023
+store_raw = true
+tickers = []
+ciks = [320193]        # Apple Inc.; explicit CIK (ticker maps can change, see R1)

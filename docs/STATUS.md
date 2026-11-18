@@ -4,9 +4,8 @@ Updated by whoever finishes a task. Newest entry at the top of the log.
 
 ## Now
 
-- **Current task:** R1 in the [reader-first brief](briefs/reader-first.md). Parser tasks 1.3–1.5
-  are merged; next is the XOM demo universe, `fl compare` and the HTML page (R1 steps 1, 3–6). The ingestion implementation (1.2) is merged. Use XOM FY2021–2023 for the first Item 1A comparison. Choose the broader company lists at R3.
-- **Next design review:** bring the generated HTML, SEC source links and baseline error note as soon as R1 is reproducible. Reader sessions follow this review.
+- **Current task:** R1 reviewed using the comparison implementation at commit `8802f7e` and handoff at `57c478a`. The HTML was independently reproduced. The three pre-session corrections and R2 pair selection are in [TODO.md](../TODO.md).
+- **Next design review:** after R2 reader sessions, bring per-reader times, source-linked must-see changes found and missed, and distracting alerts for both workflows. Escalate earlier if the corrections change the substantive output on the XOM example.
 - **Lead:** Opus 5.5 from 2026-11-17.
 - **Author setup:** done. `.env` uses port 5433 and the pre-commit guard is installed
   (2026-11-17).

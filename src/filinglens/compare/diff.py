@@ -8,15 +8,41 @@ pairs them by position.
 from __future__ import annotations
 
 import difflib
+import re
+import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal
 
 from filinglens.compare.load import Para
-from filinglens.parse.normalize import norm_exact
 
 OpKind = Literal["equal", "added", "removed", "replaced"]
 WordKind = Literal["same", "del", "ins"]
+
+
+_QUOTES = str.maketrans(
+    {
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201a": "'",
+        "\u201b": "'",
+        "\u201c": '"',
+        "\u201d": '"',
+        "\u201e": '"',
+        "\u201f": '"',
+    }
+)
+_SPACE = re.compile(r"\s+")
+
+
+def compare_key(text: str) -> str:
+    """Paragraph equality key: NFKC, lower case, straight quotes, single spaces.
+
+    Nothing else is removed. Punctuation, signs, brackets, currency symbols, ``%``,
+    ``<`` and ``>`` stay, so a sign or unit change is a change.
+    """
+    folded = unicodedata.normalize("NFKC", text).lower().translate(_QUOTES)
+    return _SPACE.sub(" ", folded).strip()
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,8 +53,8 @@ class Op:
 
 
 def diff_paragraphs(old: Sequence[Para], new: Sequence[Para]) -> list[Op]:
-    old_keys = [norm_exact(p.text) for p in old]
-    new_keys = [norm_exact(p.text) for p in new]
+    old_keys = [compare_key(p.text) for p in old]
+    new_keys = [compare_key(p.text) for p in new]
     matcher = difflib.SequenceMatcher(None, old_keys, new_keys, autojunk=False)
     ops: list[Op] = []
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
