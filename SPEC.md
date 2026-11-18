@@ -1106,6 +1106,7 @@ Designed for, not built now. Each names the seam where it attaches.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | R1 baseline accepted for development. Before R2, preserve numeric signs and units in comparison keys, enforce §6.1 eligibility, and show ambiguous replacement groups as neutral earlier/later text with explicit count labels. Keep matching frozen during reader sessions. | The reproduced XOM comparison hides a new regulatory bullet inside a replacement despite zero standalone additions. The equality key also folds a sign reversal. See TODO.md for acceptance cases. |
 | 2026-11-17 | Table rows keep dash-only cells as `—` in their column; truly empty cells and lone `$ % )` still drop or glue. Data-table detection is unchanged | Dropping the dashes shifted values into the wrong columns (Apple FY2023 fair-value table) |
 | 2026-11-17 | R1 builds tasks 1.3–1.5 in full rather than a reduced Item 1A extractor | The parser is needed again at R3, and choosing the body heading over the table of contents (1.4) is what a shortcut gets wrong |
 | 2026-11-17 | Adopt R1–R5 (§14). Start with XOM FY2021–23, source-linked baseline and reader review. Defer classifier, LLM summaries, hosted chat, MCP and the return study pending separate decisions. | Measure misses and reading time early enough to change the design. Earlier component briefs describe options for later reviews. |
